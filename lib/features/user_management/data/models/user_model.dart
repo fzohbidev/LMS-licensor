@@ -23,22 +23,29 @@ class UserModel {
     required this.authorities,
   });
 
-  // Add fromJson and toJson methods if needed for API communication.
-  // Factory constructor to create an instance from JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    var authoritiesJson = json['authorities'] as List<dynamic>? ?? [];
-    List<Authority> authorities = authoritiesJson.map((authJson) {
-      if (authJson is Map<String, dynamic>) {
-        return Authority.fromJson(authJson);
-      } else {
-        throw Exception('Invalid authority data format');
-      }
-    }).toList();
+    var authoritiesJson = json['authorities'];
+
+    List<Authority> authorities;
+    if (authoritiesJson is List) {
+      authorities = authoritiesJson.map((authJson) {
+        if (authJson is Map<String, dynamic>) {
+          return Authority.fromJson(authJson);
+        } else if (authJson is int) {
+          // Handle case where authority is just an ID
+          return Authority(id: authJson);
+        } else {
+          throw Exception('Invalid authority data format');
+        }
+      }).toList();
+    } else {
+      authorities = [];
+    }
 
     return UserModel(
       id: json['id'] ?? 0,
       username: json['username'] ?? '',
-      password: "", // Password typically not returned
+      password: json['password'] ?? '',
       email: json['email'] ?? '',
       firstname: json['firstname'] ?? '',
       lastname: json['lastname'] ?? '',
@@ -46,5 +53,20 @@ class UserModel {
       enabled: json['enabled'] ?? true,
       authorities: authorities,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'username': username,
+      'password': password,
+      'email': email,
+      'firstname': firstname,
+      'lastname': lastname,
+      'phone': phone,
+      'enabled': enabled,
+      'authorities':
+          authorities.map((authority) => authority.toJson()).toList(),
+    };
   }
 }

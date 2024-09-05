@@ -5,6 +5,7 @@ import 'package:lms/core/utils/api.dart';
 import 'package:lms/core/utils/app_router.dart';
 import 'package:lms/features/user_groups/data/data_sources/user_group_service.dart';
 import 'package:lms/features/user_groups/data/models/group_model.dart';
+import 'package:lms/features/user_management/data/models/user_model.dart';
 import '../../domain/entities/group.dart';
 import 'package:lms/features/user_groups/data/repositories/group_repository.dart';
 
@@ -22,6 +23,9 @@ class _GroupFormState extends State<GroupForm> {
   final _formKey = GlobalKey<FormState>();
   String _name = '';
   String _description = '';
+  List<UserModel> _selectedUsers = [];
+  List<UserModel> _availableUsers = []; // All users available for selection
+  List<int> _selectedUserIds = []; // Keep track of selected users' IDs
 
   @override
   void initState() {
@@ -30,9 +34,27 @@ class _GroupFormState extends State<GroupForm> {
     final Api apiInstance = Api(dio);
     api = ApiService(api: apiInstance);
 
+    // Load group data if editing
     if (widget.group != null) {
       _name = widget.group!.name;
       _description = widget.group!.description;
+      _selectedUsers = widget.group!.users; // Pre-select users for editing
+
+      // Populate _selectedUserIds based on the selected users
+      _selectedUserIds = _selectedUsers.map((user) => user.id).toList();
+    }
+
+    // Fetch the available users from the API
+    _fetchUsers();
+  }
+
+  Future<void> _fetchUsers() async {
+    try {
+      final GroupRepository groupService = GroupRepository(apiService: api);
+      _availableUsers = await groupService.fetchUsers(); // Fetch users from API
+      setState(() {});
+    } catch (e) {
+      print('Error fetching users: $e');
     }
   }
 
@@ -41,13 +63,7 @@ class _GroupFormState extends State<GroupForm> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.group != null ? 'Edit Group' : 'Create Group'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            GoRouter.of(context).push(AppRouter
-                .kGroupList); // Navigate back when the back button is pressed
-          },
-        ),
+        leading: BackButton(), // Add a back button
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -57,19 +73,45 @@ class _GroupFormState extends State<GroupForm> {
             children: [
               TextFormField(
                 decoration: InputDecoration(labelText: 'Group Name'),
-                initialValue: _name, // Pre-fill if editing
+                initialValue: _name,
                 onSaved: (value) {
                   _name = value ?? '';
                 },
               ),
               TextFormField(
                 decoration: InputDecoration(labelText: 'Description'),
-                initialValue: _description, // Pre-fill if editing
+                initialValue: _description,
                 onSaved: (value) {
                   _description = value ?? '';
                 },
               ),
               SizedBox(height: 20),
+              // User assignment section
+              Text('Assign Users',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _availableUsers.length,
+                  itemBuilder: (context, index) {
+                    final user = _availableUsers[index];
+                    return CheckboxListTile(
+                      title: Text(user.firstname + " " + user.lastname),
+                      value: _selectedUsers.contains(user),
+                      onChanged: (bool? selected) {
+                        setState(() {
+                          if (selected!) {
+                            _selectedUsers.add(user);
+                            _selectedUserIds.add(user.id); // Update IDs
+                          } else {
+                            _selectedUsers.remove(user);
+                            _selectedUserIds.remove(user.id); // Update IDs
+                          }
+                        });
+                      },
+                    );
+                  },
+                ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -78,9 +120,10 @@ class _GroupFormState extends State<GroupForm> {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
                         GroupModel group = GroupModel(
-                          id: widget.group?.id ?? 0, // Use group ID if editing
+                          id: widget.group?.id ?? 0,
                           name: _name,
                           description: _description,
+                          users: _selectedUsers, // Include selected users
                         );
 
                         try {
@@ -88,23 +131,31 @@ class _GroupFormState extends State<GroupForm> {
                               GroupRepository(apiService: api);
 
                           if (widget.group == null) {
-                            // Create new group
                             await groupService.createGroup(group);
+                            if (_selectedUserIds.isNotEmpty) {
+                              await groupService.assignUsersToGroup(
+                                  group.id, _selectedUserIds);
+                            }
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                   content: Text('Group created successfully!')),
                             );
                           } else {
-                            // Update existing group
+                            print("USER IDS SELECTED ==>$_selectedUserIds");
                             await groupService.updateGroup(group);
+                            if (_selectedUserIds.isNotEmpty) {
+                              await groupService.assignUsersToGroup(
+                                  group.id, _selectedUserIds);
+                            }
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                   content: Text('Group updated successfully!')),
                             );
                           }
 
-                          GoRouter.of(context).push(AppRouter.kGroupList);
+                          GoRouter.of(context).go(AppRouter.kGroupList);
                         } catch (e) {
+                          print("ERROR SAVING GROUP $e");
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Failed to save group: $e')),
                           );
@@ -113,11 +164,11 @@ class _GroupFormState extends State<GroupForm> {
                     },
                     child: Text('Save'),
                   ),
-                  if (widget.group !=
-                      null) // Show delete button only if editing
+                  if (widget.group != null)
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red, // Red color for delete
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
                       ),
                       onPressed: () async {
                         _showDeleteConfirmation(context);
@@ -134,7 +185,6 @@ class _GroupFormState extends State<GroupForm> {
   }
 
   Future<void> _showDeleteConfirmation(BuildContext context) async {
-    // Show confirmation dialog
     return showDialog<void>(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -145,26 +195,21 @@ class _GroupFormState extends State<GroupForm> {
             TextButton(
               child: Text('Cancel'),
               onPressed: () {
-                Navigator.of(dialogContext).pop(); // Close the dialog
+                Navigator.of(dialogContext).pop();
               },
             ),
             TextButton(
               child: Text('Delete'),
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.red, // Red text for danger
-              ),
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
               onPressed: () async {
-                // Call delete functionality here
                 try {
                   final GroupRepository groupService =
                       GroupRepository(apiService: api);
-
                   await groupService.deleteGroup(widget.group!.id);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Group deleted successfully!')),
                   );
-
-                  Navigator.of(dialogContext).pop(); // Close the dialog
+                  Navigator.of(dialogContext).pop();
                   GoRouter.of(context).go(AppRouter.kGroupList);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(

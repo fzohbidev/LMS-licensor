@@ -3,10 +3,22 @@ import 'package:lms/core/utils/api.dart';
 import 'dart:convert';
 import 'package:lms/features/user_groups/data/models/group_model.dart';
 
+import 'dart:convert'; // Import for jsonEncode
+
 class ApiService {
   final Api api;
 
   ApiService({required this.api});
+
+  Future<List<dynamic>> getUsers() async {
+    try {
+      final response = await api.get(endPoint: 'api/auth/users');
+      // print("RESPONSE FROM GET USERS => $response");
+      return response;
+    } catch (e) {
+      throw Exception('Failed to fetch users: $e');
+    }
+  }
 
   Future<List<GroupModel>> fetchGroups({dynamic filter}) async {
     List<GroupModel> groupsList = [];
@@ -58,6 +70,14 @@ class ApiService {
     );
   }
 
+  Future<void> assignUsers(GroupModel group) async {
+    final response = await api.put(
+      endPoint: 'api/auth/groups/${group.id}/assign-users',
+      body: group.toJson(),
+      token: '',
+    );
+  }
+
   Future<void> deleteGroup(int groupId) async {
     print("ID on DELETE $groupId");
     final response = await api.delete(
@@ -66,8 +86,21 @@ class ApiService {
     return response;
   }
 
-  Future<void> assignUserToGroup(Map<String, dynamic> userGroupJson) async {
-    // Implement API call to assign user to a group
+  Future<void> assignUserToGroup(int groupId, List<int> userIds) async {
+    try {
+      // Convert the List<String> to a JSON string
+      final jsonString = jsonEncode(userIds);
+      print("USER IDs $jsonString");
+      // Make the POST request with the JSON string as the body
+      final response = await api.post(
+        endPoint: 'api/auth/groups/$groupId/assign-users',
+        body: jsonString, // Pass the JSON string as the body
+        token: '', // Add your token if needed
+      );
+      print("USERS ASSIGNED");
+    } catch (e) {
+      print('Error assigning users to group: $e');
+    }
   }
 
   Future<void> removeUserFromGroup(String userId, String groupId) async {

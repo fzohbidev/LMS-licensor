@@ -42,23 +42,50 @@ class Api {
     return response.data as Map<String, dynamic>;
   }
 
-  Future<dynamic> post(
-      {required String endPoint,
-      required dynamic body,
-      @required String? token}) async {
-    if (token != null) {
-      _dio.options.headers['Authorization'] = 'Bearer $token';
-    }
-    var response = await _dio.post("$baseUrl$endPoint", data: body);
-    print("POST response: ${response.data}"); // Log the response
+  Future<dynamic> post({
+    required String endPoint,
+    required dynamic body,
+    String? token,
+  }) async {
+    try {
+      // Set the authorization header if a token is provided
+      if (token != null) {
+        _dio.options.headers['Authorization'] = 'Bearer $token';
+      }
 
-    if (response.data is String) {
-      // Return the string message if that's what the response contains
-      return response.data;
-    }
+      // Make the POST request
+      final response = await _dio.post(
+        "$baseUrl$endPoint",
+        data: body,
+        options: Options(
+          headers: {
+            'Content-Type':
+                'application/json', // Ensure the content type is set
+          },
+        ),
+      );
 
-    // Otherwise, return the JSON map
-    return response.data as Map<String, dynamic>;
+      // Log the response for debugging
+      print("POST response: ${response.data}");
+
+      // Check if response data is a string and return it directly
+      if (response.data is String) {
+        return response.data;
+      }
+
+      // Check response status code and handle accordingly
+      if (response.statusCode == 200) {
+        print('Users assigned successfully');
+        return response.data; // Return the data if successful
+      } else {
+        print('Failed to assign users: ${response.statusCode}');
+        return response.data; // Return the error data or message
+      }
+    } catch (e) {
+      print('Error making POST request: $e');
+      // Handle and rethrow or return error as needed
+      throw Exception('Error making POST request: $e');
+    }
   }
 
   Future<dynamic> delete({
