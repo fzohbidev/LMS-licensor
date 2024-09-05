@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -29,9 +31,12 @@ class Api {
     }
     var response = await _dio.put("$baseUrl$endPoint", data: body);
     print("PUT response: ${response.data}");
-
-    if (response.data is String) {
-      return response.data;
+    if (response.statusCode == 200) {
+      if (response.data is String) {
+        return response.data;
+      }
+    } else {
+      throw Exception('Failed to update group');
     }
 
     return response.data as Map<String, dynamic>;
@@ -63,12 +68,17 @@ class Api {
   }) async {
     try {
       final response = await _dio.delete(
-        endPoint,
+        "$baseUrl$endPoint",
         queryParameters: queryParameters,
         options: options,
       );
       return response.data;
     } catch (e) {
+      if (e is DioException && e.response?.statusCode == 404) {
+        print('Resource not found (404).'); // Specific handling for 404 errors
+      } else {
+        print('Failed to delete: $e'); // General error handling
+      }
       throw Exception('Failed to delete: $e');
     }
   }

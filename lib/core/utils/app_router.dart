@@ -15,6 +15,11 @@ import 'package:lms/features/roles_and_premission/presentation/views/manage_role
 import 'package:lms/features/roles_and_premission/presentation/views/roles_and_permission_dashboard_view.dart';
 import 'package:lms/features/roles_and_premission/presentation/views/update_roles_view.dart';
 import 'package:lms/features/roles_and_premission/presentation/views/users_view.dart';
+import 'package:lms/features/user_groups/data/data_sources/user_group_service.dart';
+import 'package:lms/features/user_groups/data/models/group_model.dart';
+import 'package:lms/features/user_groups/presentation/pages/group_list_page.dart';
+import 'package:lms/features/user_groups/presentation/widgets/group_edit_page.dart';
+import 'package:lms/features/user_groups/presentation/widgets/group_form.dart';
 import 'package:lms/features/user_management/presentation/pages/user_management_page.dart';
 
 abstract class AppRouter {
@@ -33,6 +38,12 @@ abstract class AppRouter {
 
   static const kProductList = '/product-list';
   static const kUserManagement = '/product-list';
+
+  static const kTeamManagement = '/team-management';
+  static const kAddGroup = '/group_add';
+  static const kGroupList = '/group_list_page';
+
+  static const kGroupDetails = '/group_details';
 
   static final router = GoRouter(
     initialLocation: kRegister,
@@ -77,6 +88,25 @@ abstract class AppRouter {
       GoRoute(
         path: kUserManagement,
         builder: (context, state) => UserManagementPage(),
+      ),
+      GoRoute(
+        path: kTeamManagement,
+        builder: (context, state) => GroupListPage(),
+      ),
+      GoRoute(
+        path: kAddGroup,
+        builder: (context, state) => GroupForm(),
+      ),
+      GoRoute(
+        path: kGroupList,
+        builder: (context, state) => GroupListPage(),
+      ),
+      GoRoute(
+        path: kGroupDetails,
+        name: 'EditGroup',
+        builder: (context, state) => GroupEditPage(
+          group: state.extra as GroupModel, // Pass the group model
+        ),
       ),
       GoRoute(
         path: kProductList,

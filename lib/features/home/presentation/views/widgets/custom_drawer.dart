@@ -74,9 +74,9 @@ class CustomExpandedDrawer extends StatelessWidget {
                   ),
                   children: <Widget>[
                     ListTile(
-                      title: const Text('Sub Item 1'),
+                      title: const Text('Show Groups'),
                       onTap: () {
-                        // Navigate to Sub Item 1
+                        GoRouter.of(context).push(AppRouter.kTeamManagement);
                       },
                     ),
                     ListTile(

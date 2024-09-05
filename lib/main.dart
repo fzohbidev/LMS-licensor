@@ -19,6 +19,10 @@ import 'package:lms/features/roles_and_premission/domain/use_case/user_use_case.
 import 'package:lms/features/roles_and_premission/presentation/manager/authoriy_cubit/authority_cubit.dart';
 import 'package:lms/features/roles_and_premission/presentation/manager/permission_cubit/permission_cubit.dart';
 import 'package:lms/features/roles_and_premission/presentation/manager/user_cubit/user_dto_cubit.dart';
+import 'package:lms/features/user_groups/data/data_sources/user_group_service.dart';
+import 'package:lms/features/user_groups/data/repositories/group_repository.dart';
+import 'package:lms/features/user_groups/domain/use_cases/get_groups.dart';
+import 'package:lms/features/user_groups/presentation/state/group_bloc.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -59,6 +63,21 @@ class MyApp extends StatelessWidget {
             FetchUsersUseCase(
               userRepository: UserRepositoryImpl(
                 userRemoteDataSource: UserRemoteDataSourceImpl(
+                  api: Api(
+                    Dio(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Add GroupBloc provider
+        BlocProvider<GroupBloc>(
+          create: (context) => GroupBloc(
+            GetGroups(
+              groupRepository: GroupRepository(
+                apiService: ApiService(
                   api: Api(
                     Dio(),
                   ),
