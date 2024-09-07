@@ -10,48 +10,54 @@ import '../../domain/entities/group.dart';
 import 'package:lms/features/user_groups/data/repositories/group_repository.dart';
 
 class GroupForm extends StatefulWidget {
-  final GroupModel? group; // Group to edit, if available
+  final GroupModel? group;
+  final ApiService api;
 
-  GroupForm({this.group}); // Accept group as optional parameter
+  GroupForm({this.group, required this.api});
 
   @override
   _GroupFormState createState() => _GroupFormState();
 }
 
 class _GroupFormState extends State<GroupForm> {
-  late ApiService api;
   final _formKey = GlobalKey<FormState>();
   String _name = '';
   String _description = '';
-  List<UserModel> _selectedUsers = [];
-  List<UserModel> _availableUsers = []; // All users available for selection
-  List<int> _selectedUserIds = []; // Keep track of selected users' IDs
+  late List<UserModel> _availableUsers = [];
+  late Set<int> _selectedUserIds;
+  late List<int> _usersToRemove = []; // New list to track unchecked users
 
   @override
   void initState() {
     super.initState();
-    final Dio dio = Dio();
-    final Api apiInstance = Api(dio);
-    api = ApiService(api: apiInstance);
-
-    // Load group data if editing
+    _selectedUserIds = widget.group?.users.map((user) => user.id).toSet() ?? {};
+    _fetchUsers();
     if (widget.group != null) {
       _name = widget.group!.name;
       _description = widget.group!.description;
-      _selectedUsers = widget.group!.users; // Pre-select users for editing
-
-      // Populate _selectedUserIds based on the selected users
-      _selectedUserIds = _selectedUsers.map((user) => user.id).toList();
+      widget.group!.users = widget.group?.users ?? [];
+      print('Loaded group users: ${widget.group?.users}');
     }
-
-    // Fetch the available users from the API
-    _fetchUsers();
   }
 
   Future<void> _fetchUsers() async {
     try {
-      final GroupRepository groupService = GroupRepository(apiService: api);
-      _availableUsers = await groupService.fetchUsers(); // Fetch users from API
+      final groupService = GroupRepository(apiService: widget.api);
+      _availableUsers = await groupService.fetchUsers();
+
+      // Debugging prints
+      print('Available users: $_availableUsers');
+      print('Group users: ${widget.group?.users}');
+
+      // Initialize _selectedUserIds based on the group ID
+      _selectedUserIds = _availableUsers
+          .where((user) =>
+              user.groups.any((group) => group.id == widget.group?.id))
+          .map((user) => user.id)
+          .toSet();
+
+      print('Selected user IDs: $_selectedUserIds');
+
       setState(() {});
     } catch (e) {
       print('Error fetching users: $e');
@@ -63,7 +69,7 @@ class _GroupFormState extends State<GroupForm> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.group != null ? 'Edit Group' : 'Create Group'),
-        leading: BackButton(), // Add a back button
+        leading: BackButton(),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -74,19 +80,14 @@ class _GroupFormState extends State<GroupForm> {
               TextFormField(
                 decoration: InputDecoration(labelText: 'Group Name'),
                 initialValue: _name,
-                onSaved: (value) {
-                  _name = value ?? '';
-                },
+                onSaved: (value) => _name = value ?? '',
               ),
               TextFormField(
                 decoration: InputDecoration(labelText: 'Description'),
                 initialValue: _description,
-                onSaved: (value) {
-                  _description = value ?? '';
-                },
+                onSaved: (value) => _description = value ?? '',
               ),
               SizedBox(height: 20),
-              // User assignment section
               Text('Assign Users',
                   style: TextStyle(fontWeight: FontWeight.bold)),
               Expanded(
@@ -94,17 +95,21 @@ class _GroupFormState extends State<GroupForm> {
                   itemCount: _availableUsers.length,
                   itemBuilder: (context, index) {
                     final user = _availableUsers[index];
+                    final isChecked = _selectedUserIds.contains(user.id);
                     return CheckboxListTile(
-                      title: Text(user.firstname + " " + user.lastname),
-                      value: _selectedUsers.contains(user),
+                      title: Text('${user.firstname} ${user.lastname}'),
+                      value: isChecked,
                       onChanged: (bool? selected) {
                         setState(() {
-                          if (selected!) {
-                            _selectedUsers.add(user);
-                            _selectedUserIds.add(user.id); // Update IDs
+                          if (selected == true) {
+                            _selectedUserIds.add(user.id);
+                            _usersToRemove.remove(user
+                                .id); // Remove from removal list if rechecked
                           } else {
-                            _selectedUsers.remove(user);
-                            _selectedUserIds.remove(user.id); // Update IDs
+                            _selectedUserIds.remove(user.id);
+                            _usersToRemove.add(user.id); // Add to removal list
+                            print(
+                                'SELECTED USERS AFTER UNCHECKING: $_selectedUserIds');
                           }
                         });
                       },
@@ -123,30 +128,27 @@ class _GroupFormState extends State<GroupForm> {
                           id: widget.group?.id ?? 0,
                           name: _name,
                           description: _description,
-                          users: _selectedUsers, // Include selected users
+                          users: _availableUsers
+                              .where(
+                                  (user) => _selectedUserIds.contains(user.id))
+                              .toList(),
                         );
 
                         try {
                           final GroupRepository groupService =
-                              GroupRepository(apiService: api);
+                              GroupRepository(apiService: widget.api);
 
                           if (widget.group == null) {
                             await groupService.createGroup(group);
-                            if (_selectedUserIds.isNotEmpty) {
-                              await groupService.assignUsersToGroup(
-                                  group.id, _selectedUserIds);
-                            }
+                            await groupService.assignUsersToGroup(
+                                group.id, _selectedUserIds.toList());
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                   content: Text('Group created successfully!')),
                             );
                           } else {
-                            print("USER IDS SELECTED ==>$_selectedUserIds");
                             await groupService.updateGroup(group);
-                            if (_selectedUserIds.isNotEmpty) {
-                              await groupService.assignUsersToGroup(
-                                  group.id, _selectedUserIds);
-                            }
+                            await _syncGroupUsers(groupService, group.id);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                   content: Text('Group updated successfully!')),
@@ -170,9 +172,7 @@ class _GroupFormState extends State<GroupForm> {
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                       ),
-                      onPressed: () async {
-                        _showDeleteConfirmation(context);
-                      },
+                      onPressed: () => _showDeleteConfirmation(context),
                       child: Text('Delete'),
                     ),
                 ],
@@ -184,19 +184,37 @@ class _GroupFormState extends State<GroupForm> {
     );
   }
 
+  Future<void> _syncGroupUsers(
+      GroupRepository groupService, int groupId) async {
+    final currentGroupUsers = widget.group?.users ?? [];
+    print("Current group users $currentGroupUsers");
+    final currentUserIds = currentGroupUsers.map((user) => user.id).toSet();
+
+    final usersToAdd = _selectedUserIds.difference(currentUserIds);
+    final usersToRemove = _usersToRemove.toSet(); // Use the usersToRemove list
+
+    print("CURRENT USERS ID $currentUserIds");
+    if (usersToAdd.isNotEmpty) {
+      await groupService.assignUsersToGroup(groupId, usersToAdd.toList());
+    }
+
+    if (usersToRemove.isNotEmpty) {
+      print("USERS TO REMOVE $usersToRemove");
+      await groupService.revokeUsersFromGroup(groupId, usersToRemove.toList());
+    }
+  }
+
   Future<void> _showDeleteConfirmation(BuildContext context) async {
-    return showDialog<void>(
+    showDialog<void>(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: Text('Confirm Deletion'),
           content: Text('Are you sure you want to delete this group?'),
-          actions: <Widget>[
+          actions: [
             TextButton(
               child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
+              onPressed: () => Navigator.of(dialogContext).pop(),
             ),
             TextButton(
               child: Text('Delete'),
@@ -204,7 +222,7 @@ class _GroupFormState extends State<GroupForm> {
               onPressed: () async {
                 try {
                   final GroupRepository groupService =
-                      GroupRepository(apiService: api);
+                      GroupRepository(apiService: widget.api);
                   await groupService.deleteGroup(widget.group!.id);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Group deleted successfully!')),

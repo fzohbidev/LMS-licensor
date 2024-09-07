@@ -14,6 +14,9 @@ class ApiService {
     try {
       final response = await api.get(endPoint: 'api/auth/users');
       // print("RESPONSE FROM GET USERS => $response");
+      // Debug print
+      print('Fetched GroupModel: $response');
+
       return response;
     } catch (e) {
       throw Exception('Failed to fetch users: $e');
@@ -80,9 +83,8 @@ class ApiService {
 
   Future<void> deleteGroup(int groupId) async {
     print("ID on DELETE $groupId");
-    final response = await api.delete(
-      endPoint: 'api/auth/groups/$groupId',
-    );
+    final response =
+        await api.delete(endPoint: 'api/auth/groups/$groupId', body: '');
     return response;
   }
 
@@ -100,6 +102,19 @@ class ApiService {
       print("USERS ASSIGNED");
     } catch (e) {
       print('Error assigning users to group: $e');
+    }
+  }
+
+  // Method to revoke users from a group
+  Future<void> revokeUserFromGroup(int groupId, List<int> userIds) async {
+    try {
+      await api.delete(
+        endPoint: 'api/auth/groups/$groupId/revoke-users',
+        body: userIds, // Send userIds directly as a JSON array
+      );
+      print("USERS UNASSIGNED");
+    } catch (e) {
+      throw Exception('Failed to revoke users from group: $e');
     }
   }
 

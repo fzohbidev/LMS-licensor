@@ -41,6 +41,7 @@ class _UserFormState extends State<UserForm> {
         phone: '',
         enabled: true,
         authorities: [],
+        groups: [], // Initialize the groups field with an empty list
       ));
     }
   }
@@ -84,6 +85,7 @@ class _UserFormState extends State<UserForm> {
         phone: '',
         enabled: true,
         authorities: [],
+        groups: [], // Initialize the groups field with an empty list
       ));
     });
   }

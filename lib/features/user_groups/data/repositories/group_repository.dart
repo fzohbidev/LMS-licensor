@@ -42,4 +42,13 @@ class GroupRepository {
       throw Exception('Error assigning users to group: $e');
     }
   }
+
+  // New method to revoke (remove) users from a group
+  Future<void> revokeUsersFromGroup(int groupId, List<int> userIds) async {
+    try {
+      await apiService.revokeUserFromGroup(groupId, userIds);
+    } catch (e) {
+      throw Exception('Error revoking users from group: $e');
+    }
+  }
 }

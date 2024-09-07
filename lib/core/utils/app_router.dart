@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lms/core/utils/api.dart';
 import 'package:lms/features/auth/presentation/views/forgot_password_page.dart';
 import 'package:lms/features/auth/presentation/views/register_screen.dart';
 import 'package:lms/features/auth/presentation/views/signin_screen.dart';
@@ -23,7 +25,9 @@ import 'package:lms/features/user_groups/presentation/widgets/group_form.dart';
 import 'package:lms/features/user_management/presentation/pages/user_management_page.dart';
 
 abstract class AppRouter {
-  static const kSignIn = '/singIn';
+  final Dio _dio = Dio();
+  final Api apiInstance = Api(Dio());
+  static const kSignIn = '/';
   static const kHomeView = '/homeView';
   static const kPaymentView = '/paymentView';
   static const kLicenseRenewalView = '/licenseRenewalView';
@@ -31,13 +35,13 @@ abstract class AppRouter {
   static const kManageRolesView = '/manageRolesView';
   static const kUpdateRoleView = '/updateRoleView';
   static const kAddNewRoleView = '/addNewRoleView';
-  static const kRegister = '/';
+  static const kRegister = '/register';
   static const kForgot = '/forgot-password';
   static const kResetPassword = '/reset_password';
   static const kUsersView = '/usersView';
 
   static const kProductList = '/product-list';
-  static const kUserManagement = '/product-list';
+  static const kUserManagement = '/user-management';
 
   static const kTeamManagement = '/team-management';
   static const kAddGroup = '/group_add';
@@ -45,8 +49,12 @@ abstract class AppRouter {
 
   static const kGroupDetails = '/group_details';
 
-  static final router = GoRouter(
-    initialLocation: kRegister,
+  // Initialize ApiService in the context where it is needed
+
+  static final ApiService api = ApiService(api: Api(Dio()));
+
+  static final GoRouter router = GoRouter(
+    initialLocation: kSignIn,
     errorPageBuilder: (context, state) => MaterialPage(child: Container()),
     routes: [
       GoRoute(
@@ -95,7 +103,9 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kAddGroup,
-        builder: (context, state) => GroupForm(),
+        builder: (context, state) => GroupForm(
+          api: api, // Pass ApiService instance
+        ),
       ),
       GoRoute(
         path: kGroupList,
@@ -104,20 +114,19 @@ abstract class AppRouter {
       GoRoute(
         path: kGroupDetails,
         name: 'EditGroup',
-        builder: (context, state) => GroupEditPage(
-          group: state.extra as GroupModel, // Pass the group model
-        ),
+        builder: (context, state) {
+          final group = state.extra as GroupModel;
+          return GroupEditPage(
+            group: group,
+            api: api, // Pass ApiService instance
+          );
+        },
       ),
       GoRoute(
         path: kProductList,
         builder: (context, state) {
-          // Create an instance of the repository
           final productRepository = ProductRepository();
-
-          // Fetch the products
           final products = productRepository.getProducts();
-
-          // Pass the products to the ProductListPage
           return ProductListPage(
             products: products,
           );
@@ -144,7 +153,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kUsersView,
-        builder: (BuildContext context, GoRouterState state) {
+        builder: (context, state) {
           final authority = state.extra as Authority;
           return UsersView(
             authority: authority,

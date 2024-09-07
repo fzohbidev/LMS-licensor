@@ -33,6 +33,7 @@ class GroupModel {
           lastname: '',
           phone: '',
           authorities: [],
+          groups: [], // Initialize the groups field with an empty list
         ));
       } else {
         throw Exception('Invalid user data format');

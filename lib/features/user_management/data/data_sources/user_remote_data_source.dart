@@ -67,9 +67,8 @@ class UserRemoteDataSource {
 
   Future<String> removeUser(int userId) async {
     try {
-      var response = await api.delete(
-        endPoint: "/api/auth/delete/$userId",
-      );
+      var response =
+          await api.delete(endPoint: "/api/auth/delete/$userId", body: '');
 
       print("Response data: $response");
 

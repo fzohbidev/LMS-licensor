@@ -90,13 +90,13 @@ class Api {
 
   Future<dynamic> delete({
     required String endPoint,
-    Map<String, dynamic>? queryParameters,
+    required dynamic body,
     Options? options,
   }) async {
     try {
       final response = await _dio.delete(
         "$baseUrl$endPoint",
-        queryParameters: queryParameters,
+        data: body,
         options: options,
       );
       return response.data;
