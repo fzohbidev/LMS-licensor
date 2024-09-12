@@ -8,6 +8,7 @@ import 'package:lms/features/user_groups/data/models/group_model.dart';
 import 'package:lms/features/user_management/data/models/user_model.dart';
 import '../../domain/entities/group.dart';
 import 'package:lms/features/user_groups/data/repositories/group_repository.dart';
+import 'package:lms/core/functions/show_snack_bar.dart';
 
 class GroupForm extends StatefulWidget {
   final GroupModel? group;
@@ -142,17 +143,13 @@ class _GroupFormState extends State<GroupForm> {
                             await groupService.createGroup(group);
                             await groupService.assignUsersToGroup(
                                 group.id, _selectedUserIds.toList());
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Group created successfully!')),
-                            );
+                            showSnackBar(context, 'Group inserted successfully',
+                                Colors.green);
                           } else {
                             await groupService.updateGroup(group);
                             await _syncGroupUsers(groupService, group.id);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Group updated successfully!')),
-                            );
+                            showSnackBar(context, 'Group updated successfully',
+                                Colors.green);
                           }
 
                           GoRouter.of(context).go(AppRouter.kGroupList);
@@ -224,9 +221,8 @@ class _GroupFormState extends State<GroupForm> {
                   final GroupRepository groupService =
                       GroupRepository(apiService: widget.api);
                   await groupService.deleteGroup(widget.group!.id);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Group deleted successfully!')),
-                  );
+                  showSnackBar(
+                      context, 'Group deleted successfully', Colors.red);
                   Navigator.of(dialogContext).pop();
                   GoRouter.of(context).go(AppRouter.kGroupList);
                 } catch (e) {

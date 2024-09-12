@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:lms/core/functions/show_snack_bar.dart';
 import 'package:lms/features/user_management/data/models/user_model.dart';
 
 class UserForm extends StatefulWidget {
@@ -55,16 +56,13 @@ class _UserFormState extends State<UserForm> {
       final emails = _users.map((user) => user.email).toSet();
 
       if (usernames.length != _users.length) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Duplicate usernames are not allowed')),
-        );
+        showSnackBar(
+            context, 'Duplicate usernames are not allowed', Colors.red);
         return;
       }
 
       if (emails.length != _users.length) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Duplicate emails are not allowed')),
-        );
+        showSnackBar(context, 'Duplicate emails are not allowed', Colors.red);
         return;
       }
 
@@ -218,9 +216,8 @@ class _UserFormState extends State<UserForm> {
                 if (_users.length > 1) {
                   _removeUser(index);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('At least one user is required')),
-                  );
+                  showSnackBar(
+                      context, 'At least one user is required', Colors.red);
                 }
               },
               tooltip: 'Remove User',

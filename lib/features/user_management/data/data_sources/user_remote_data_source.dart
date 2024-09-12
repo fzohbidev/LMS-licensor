@@ -1,14 +1,16 @@
 import 'dart:convert';
 
 import 'package:lms/core/utils/api.dart';
+import 'package:lms/features/auth/data/data_sources/auth_remote_data_source.dart';
+import 'package:lms/features/user_management/domain/entities/user.dart';
 
 import '../../../roles_and_premission/data/models/authority.dart';
 import '../models/user_model.dart';
 
-class UserRemoteDataSource {
+class UserManagementRemoteDataSource {
   final Api api;
 
-  UserRemoteDataSource(this.api);
+  UserManagementRemoteDataSource(this.api);
 
   Future<String> addUsers(List<UserModel> users) async {
     // Prepare the list of user data for the request body
@@ -110,6 +112,42 @@ class UserRemoteDataSource {
     } catch (e) {
       print("Failed to get users: $e");
       return [];
+    }
+  }
+
+  Future<Map<String, dynamic>> getUserProfile(String username) async {
+    try {
+      // Call the API to get the user data as a Map
+      var response = await api.getUser(
+          endPoint: "api/auth/user/profile/$username", token: jwtToken);
+
+      print("Response from API: $response");
+
+      if (response == null) {
+        throw Exception('Response is null');
+      }
+
+      // Convert the Map to UserModel
+      return response;
+    } catch (e) {
+      print("Failed to get user profile: $e");
+      throw e;
+    }
+  }
+
+  Future<Map<String, dynamic>> updateUserProfile(
+      Map<String, dynamic> userJson, String token) async {
+    try {
+      var response = await api.put(
+        endPoint: "api/auth/update/${userJson['id']}",
+        body: userJson, // Send the JSON data
+        token: token,
+      );
+
+      return response;
+    } catch (e) {
+      print("Failed to update user profile: $e");
+      throw "Failed to update user profile: $e";
     }
   }
 }

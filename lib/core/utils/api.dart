@@ -18,7 +18,18 @@ class Api {
     return response.data as List<dynamic>;
   }
 
-  Future<dynamic> put({
+  Future<Map<String, dynamic>> getUser({
+    required String endPoint,
+    String? token,
+  }) async {
+    if (token != null) {
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+    }
+    var response = await _dio.get("$baseUrl$endPoint");
+    return response.data as Map<String, dynamic>; // Ensure this is a Map
+  }
+
+  Future<Map<String, dynamic>> put({
     required String endPoint,
     required dynamic body,
     required String?

@@ -16,8 +16,9 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<Either<Failure, Unit>> loginUser(
       {String username = '', String password = ''}) async {
     try {
-      await authRemoteDataSource.loginUser(
+      final response = await authRemoteDataSource.loginUser(
           password: password, username: username);
+      final extractedUsername = right(unit);
       return right(unit); // Return Unit from dartz
     } catch (e) {
       print("Error in loginUser: $e"); // Logging the error

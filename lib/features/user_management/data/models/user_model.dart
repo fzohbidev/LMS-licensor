@@ -27,23 +27,24 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    // print("Parsing JSON in UserModel.fromJson: $json");
+
+    // Parsing authorities
     var authoritiesJson = json['authorities'];
-    List<Authority> authorities;
+    List<Authority> authorities = [];
     if (authoritiesJson is List) {
       authorities = authoritiesJson.map((authJson) {
         if (authJson is Map<String, dynamic>) {
           return Authority.fromJson(authJson);
-        } else if (authJson is int) {
-          // Handle case where authority is just an ID
-          return Authority(id: authJson);
         } else {
           throw Exception('Invalid authority data format');
         }
       }).toList();
     } else {
-      authorities = [];
+      print('Authorities field is not a list: $authoritiesJson');
     }
 
+    // Parsing groups
     var groupsJson = json['groups'];
     List<GroupModel> groups = [];
     if (groupsJson is List) {
@@ -54,6 +55,8 @@ class UserModel {
           throw Exception('Invalid group data format');
         }
       }).toList();
+    } else {
+      print('Groups field is not a list: $groupsJson');
     }
 
     return UserModel(

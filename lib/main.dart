@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lms/core/functions/set_up_service_locator.dart';
 import 'package:lms/core/simple_bloc_observer.dart';
 import 'package:lms/core/utils/api.dart';
@@ -23,17 +24,35 @@ import 'package:lms/features/user_groups/data/data_sources/user_group_service.da
 import 'package:lms/features/user_groups/data/repositories/group_repository.dart';
 import 'package:lms/features/user_groups/domain/use_cases/get_groups.dart';
 import 'package:lms/features/user_groups/presentation/state/group_bloc.dart';
+import 'package:lms/features/user_management/data/data_sources/user_remote_data_source.dart';
 import 'package:provider/provider.dart';
+
+import 'features/user_management/data/repositories/user_repository.dart';
 
 void main() {
   setUpServiceLocator();
   Bloc.observer = SimpleBlocObserver();
+  final UserManagementRemoteDataSource userRemoteDataSourceImpl;
+  final userRepository = UserRepositoryManagementImpl(
+      remoteDataSource: UserManagementRemoteDataSource(
+          Api(Dio()))); // Provide actual initialization
+  final apiService =
+      ApiService(api: Api(Dio())); // Provide actual initialization
 
-  runApp(const MyApp());
+  // Create the AppRouter instance
+  final appRouter =
+      AppRouter(userRepository: userRepository, apiService: apiService);
+
+  // Create the GoRouter instance using the method
+  final router = appRouter.createRouter();
+
+  runApp(MyApp(router: router));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final GoRouter router;
+
+  const MyApp({required this.router});
 
   @override
   Widget build(BuildContext context) {
@@ -92,8 +111,8 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (context) => CartProvider()),
         ],
         child: MaterialApp.router(
-          routerConfig: AppRouter.router,
-          debugShowCheckedModeBanner: false,
+          routerConfig: router,
+          debugShowCheckedModeBanner: true,
           theme: ThemeData.light().copyWith(
             iconTheme: const IconThemeData(color: Colors.black),
             hintColor: Colors.black,

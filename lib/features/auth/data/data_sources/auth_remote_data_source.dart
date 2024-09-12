@@ -8,7 +8,8 @@ String jwtToken = '';
 abstract class AuthRemoteDataSource {
   Future<void> loginUser({String username, String password});
   Future<void> registerUser(
-      {String firstName,
+      {int id,
+      String firstName,
       String lastName,
       String username,
       String password,
@@ -34,19 +35,25 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
     print(userRole);
     // Save the JWT token using SharedPreferences
     jwtToken = result['jwtToken'];
+    username = result['username'];
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('jwtToken', result['jwtToken']);
+
+    SharedPreferences usernamePrefs = await SharedPreferences.getInstance();
+    await usernamePrefs.setString('username', result['username']);
   }
 
   @override
   Future<void> registerUser(
-      {String firstName = '',
+      {int id = 0,
+      String firstName = '',
       String lastName = '',
       String username = '',
       String password = '',
       String phone = '',
       String email = ''}) async {
     User user = User(
+        id: id,
         firstName: firstName,
         lastName: lastName,
         username: username,

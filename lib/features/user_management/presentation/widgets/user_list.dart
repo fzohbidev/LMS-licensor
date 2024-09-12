@@ -19,7 +19,7 @@ class UserListPage extends StatefulWidget {
 class _UserListPageState extends State<UserListPage> {
   late Dio dio;
   late Api api;
-  late UserRemoteDataSource _userRemoteDataSource;
+  late UserManagementRemoteDataSource _userRemoteDataSource;
   List<UserModel> _users = [];
   bool _isLoading = true;
 
@@ -28,7 +28,7 @@ class _UserListPageState extends State<UserListPage> {
     super.initState();
     dio = Dio(BaseOptions(baseUrl: 'http://localhost:8080'));
     api = Api(dio);
-    _userRemoteDataSource = UserRemoteDataSource(api);
+    _userRemoteDataSource = UserManagementRemoteDataSource(api);
     _fetchUsers();
   }
 
