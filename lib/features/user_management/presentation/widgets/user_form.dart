@@ -28,7 +28,7 @@ class _UserFormState extends State<UserForm> {
     if (widget.isEditing) {
       // If editing, ensure that the existing users are set up correctly
       for (var user in _users) {
-        user.password = ''; // Don't pre-fill password when editing
+        // user.password = ''; // Don't pre-fill password when editing
       }
     } else {
       // If adding, initialize with a blank user
@@ -150,7 +150,7 @@ class _UserFormState extends State<UserForm> {
               },
               onSaved: (value) => _users[index].username = value!,
             ),
-            if (!widget.isEditing)
+            if (widget.isEditing)
               TextFormField(
                 initialValue: _users[index].password,
                 decoration: InputDecoration(labelText: 'Password'),

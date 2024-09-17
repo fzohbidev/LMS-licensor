@@ -1,4 +1,5 @@
 import 'package:lms/features/user_management/data/data_sources/user_remote_data_source.dart';
+import 'package:lms/features/user_management/domain/entities/license.dart';
 import 'package:lms/features/user_management/domain/repositories/user_repository.dart';
 
 import 'package:lms/features/user_management/data/models/user_model.dart';
@@ -74,5 +75,10 @@ class UserRepositoryManagementImpl implements UserRepository {
   Future<String> updateUserProfile(UserModel userModel) {
     // TODO: implement updateUserProfile
     throw UnimplementedError();
+  }
+
+  @override
+  Future<List<License>> getUserLicenses(int userId, String token) async {
+    return await remoteDataSource.getUserLicenses(userId, token);
   }
 }

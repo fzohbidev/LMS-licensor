@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:lms/core/utils/api.dart';
 import 'package:lms/features/auth/data/data_sources/auth_remote_data_source.dart';
+import 'package:lms/features/user_management/data/models/license_model.dart';
 import 'package:lms/features/user_management/domain/entities/user.dart';
 
 import '../../../roles_and_premission/data/models/authority.dart';
@@ -121,7 +122,7 @@ class UserManagementRemoteDataSource {
       var response = await api.getUser(
           endPoint: "api/auth/user/profile/$username", token: jwtToken);
 
-      print("Response from API: $response");
+      // print("Response from API: $response");
 
       if (response == null) {
         throw Exception('Response is null');
@@ -148,6 +149,31 @@ class UserManagementRemoteDataSource {
     } catch (e) {
       print("Failed to update user profile: $e");
       throw "Failed to update user profile: $e";
+    }
+  }
+
+  Future<List<LicenseModel>> getUserLicenses(int userId, String token) async {
+    try {
+      // Call the API to get licenses data
+      var response = await api.getUserLicenses(
+          endPoint: "api/license/user/$userId", token: token);
+
+      print("Response from API: $response");
+
+      if (response == null) {
+        throw Exception('Response is null');
+      }
+
+      // Convert the Map response to a list of LicenseModel
+      List<LicenseModel> licenses = (response as List)
+          .map((licenseData) =>
+              LicenseModel.fromJson(licenseData as Map<String, dynamic>))
+          .toList();
+
+      return licenses;
+    } catch (e) {
+      // print("Failed to get user licenses: $e");
+      rethrow;
     }
   }
 }

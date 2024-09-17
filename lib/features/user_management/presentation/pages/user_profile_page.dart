@@ -3,8 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:lms/core/functions/show_snack_bar.dart';
 import 'package:lms/features/auth/data/data_sources/auth_remote_data_source.dart';
+import 'package:lms/features/license_renewal/presentation/model/license_model.dart';
+import 'package:lms/features/user_management/domain/entities/license.dart';
 import 'package:lms/features/user_management/domain/entities/user.dart';
 import 'package:lms/features/user_management/data/models/user_model.dart';
+import 'package:lms/features/user_management/domain/use_cases/get_user_licenses.dart';
 import 'package:lms/features/user_management/domain/use_cases/get_user_profile_data.dart';
 import 'package:lms/features/user_management/domain/use_cases/update_user.dart';
 
@@ -16,11 +19,13 @@ class UserProfilePage extends StatefulWidget {
   final GetUserProfile getUserProfile;
   final UpdateUserProfile updateUserProfile;
   final String username;
-
-  UserProfilePage({
+  final GetUserLicenses getUserLicenses;
+  const UserProfilePage({
+    super.key,
     required this.getUserProfile,
     required this.updateUserProfile,
     required this.username,
+    required this.getUserLicenses,
   });
 
   @override
@@ -38,6 +43,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       TextEditingController(); // Added controller for password
 
   late UserModel _user;
+  List<License> _licenses = []; // Define the _licenses list
 
   @override
   void initState() {
@@ -45,18 +51,18 @@ class _UserProfilePageState extends State<UserProfilePage> {
     // Fetch user profile and licenses when the page loads
     // print("USERNAME IN initState ${widget.username}");
     _fetchUserProfile(widget.username);
-    _fetchUserLicenses();
+    _fetchUserLicenses(widget.username);
   }
 
   void _fetchUserProfile(String username) async {
     try {
       UserModel user = await widget.getUserProfile.call(username);
-      print("USER PROFILE FETCHED: ${user.firstname}");
+      // print("USER PROFILE FETCHED: ${user.firstname}");
       // Convert UserModel to Map<String, dynamic>
       Map<String, dynamic> userMap = user.toJson();
 
       // Print the map for debugging
-      print("USER PROFILE AS MAP: $userMap");
+      // print("USER PROFILE AS MAP: $userMap");
       setState(() {
         _user = user;
         _firstNameController.text = user.firstname;
@@ -71,8 +77,24 @@ class _UserProfilePageState extends State<UserProfilePage> {
     }
   }
 
-  void _fetchUserLicenses() {
-    // Call UseCase to fetch licenses from the License Service
+  void _fetchUserLicenses(String username) async {
+    try {
+      UserModel user = await widget.getUserProfile.call(username);
+      setState(() {
+        _user = user;
+      });
+      // print("USER ID IN FETCH USER LICENSES ${_user.id}");
+      // Call UseCase to fetch licenses and update _licenses
+      List<License> licenses =
+          (await widget.getUserLicenses.call(_user.id, jwtToken));
+
+      setState(() {
+        _licenses = licenses; // Update the _licenses list
+        print("USER PROFILE FETCHED: $licenses");
+      });
+    } catch (e) {
+      print("Error fetching user licenses: $e");
+    }
   }
 
   void _updateUserProfile() async {
@@ -171,32 +193,25 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
+  // Update _buildLicensesList to display the fetched licenses
   // Method to build the licenses list
   Widget _buildLicensesList() {
-    // Placeholder data, replace with actual licenses from License Service
-    final licenses = [
-      {
-        'deviceName': 'Device 1',
-        'endDate': '2024-12-31',
-        'serverCode': 'ABC123'
-      },
-      {
-        'deviceName': 'Device 2',
-        'endDate': '2024-06-30',
-        'serverCode': 'XYZ789'
-      },
-    ];
+    if (_licenses.isEmpty) {
+      return Center(
+        child: Text('No licenses available'),
+      );
+    }
 
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
-      itemCount: licenses.length,
+      itemCount: _licenses.length,
       itemBuilder: (context, index) {
-        final license = licenses[index];
+        final license = _licenses[index];
         return ListTile(
-          title: Text(license['deviceName']!),
+          title: Text(license.deviceName), // Access using map key
           subtitle: Text(
-              'Expires on: ${license['endDate']}\nServer Code: ${license['serverCode']}'),
+              'Expires on: ${license.endDate}\nServer Code: ${license.serverCode}'),
         );
       },
     );

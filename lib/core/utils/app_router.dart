@@ -23,6 +23,7 @@ import 'package:lms/features/user_groups/presentation/pages/group_list_page.dart
 import 'package:lms/features/user_groups/presentation/widgets/group_edit_page.dart';
 import 'package:lms/features/user_groups/presentation/widgets/group_form.dart';
 import 'package:lms/features/user_management/data/repositories/user_repository.dart';
+import 'package:lms/features/user_management/domain/use_cases/get_user_licenses.dart';
 import 'package:lms/features/user_management/domain/use_cases/get_user_profile_data.dart';
 import 'package:lms/features/user_management/domain/use_cases/update_user.dart';
 import 'package:lms/features/user_management/domain/use_cases/update_user_profile.dart';
@@ -113,6 +114,7 @@ class AppRouter {
           builder: (context, state) {
             final userProfileUseCase = GetUserProfile(userRepository);
             final updateUserProfileUseCase = UpdateUserProfile(userRepository);
+            final updateUserLicenses = GetUserLicenses(userRepository);
             final username = state.pathParameters['username'] ?? 'Guest';
             print("USERNAME IN APP ROUTER=>${username}");
 
@@ -120,6 +122,7 @@ class AppRouter {
               getUserProfile: userProfileUseCase,
               updateUserProfile: updateUserProfileUseCase,
               username: username,
+              getUserLicenses: updateUserLicenses,
             );
           },
         ),
