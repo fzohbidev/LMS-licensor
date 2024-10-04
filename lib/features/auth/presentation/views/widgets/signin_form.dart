@@ -47,7 +47,6 @@ class _SignInFormState extends State<SignInForm> {
               onChanged: (bool? value) {
                 setState(() {
                   isLicensor = value;
-                  print(isLicensor);
                 });
               },
             ),
@@ -58,7 +57,6 @@ class _SignInFormState extends State<SignInForm> {
               onChanged: (bool? value) {
                 setState(() {
                   isLicensor = value;
-                  print(isLicensor);
                 });
               },
             ),

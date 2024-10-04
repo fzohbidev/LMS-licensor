@@ -27,13 +27,22 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
       {String username = '',
       String password = '',
       required bool isLicensor}) async {
-    var result = await api.post(
-      endPoint: "api/auth/signin",
-      body: {
-        "username": username,
-        "password": password,
-      },
-    );
+    var result = isLicensor
+        ? await api.post(
+            endPoint: "licensor/api/auth/signin",
+            body: {
+              "username": username,
+              "password": password,
+              "isLicensor": true,
+            },
+          )
+        : await api.post(
+            endPoint: "api/auth/signin",
+            body: {
+              "username": username,
+              "password": password,
+            },
+          );
     userRole = result['roles'];
     print(userRole);
     // Save the JWT token using SharedPreferences
