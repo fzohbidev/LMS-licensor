@@ -13,9 +13,12 @@ class SignInCubit extends Cubit<SignInState> {
   ) : super(SignInInitial());
   final LoginUseCase loginUseCase;
   Future<void> signIn(
-      {required String username, required String password}) async {
+      {required String username,
+      required String password,
+      required bool isLicensor}) async {
     emit(SignInLoading());
-    var result = await loginUseCase.call(un: username, pw: password);
+    var result = await loginUseCase.call(
+        un: username, pw: password, isLicensor: isLicensor);
 
     result.fold(
       (failure) {

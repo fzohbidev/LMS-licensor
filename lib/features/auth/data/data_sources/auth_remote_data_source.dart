@@ -6,7 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 String jwtToken = '';
 
 abstract class AuthRemoteDataSource {
-  Future<void> loginUser({String username, String password});
+  Future<void> loginUser(
+      {String username, String password, required bool isLicensor});
   Future<void> registerUser(
       {String firstName,
       String lastName,
@@ -22,7 +23,10 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
   AuthRemoteDataSourceImpl({required this.api});
 
   @override
-  Future<void> loginUser({String username = '', String password = ''}) async {
+  Future<void> loginUser(
+      {String username = '',
+      String password = '',
+      required bool isLicensor}) async {
     var result = await api.post(
       endPoint: "api/auth/signin",
       body: {

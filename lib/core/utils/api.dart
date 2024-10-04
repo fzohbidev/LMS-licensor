@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class Api {
   final Dio _dio;
-  final String baseUrl = "http://localhost:8080/";
+  final String baseUrl = "http://localhost:8082/";
 
   Api(this._dio);
 

@@ -14,10 +14,12 @@ class AuthRepositoryImpl extends AuthRepository {
 
   @override
   Future<Either<Failure, Unit>> loginUser(
-      {String username = '', String password = ''}) async {
+      {String username = '',
+      String password = '',
+      required bool isLicensor}) async {
     try {
       await authRemoteDataSource.loginUser(
-          password: password, username: username);
+          password: password, username: username, isLicensor: isLicensor);
       return right(unit); // Return Unit from dartz
     } catch (e) {
       print("Error in loginUser: $e"); // Logging the error

@@ -5,16 +5,24 @@ import 'package:lms/core/functions/show_snack_bar.dart';
 import 'package:lms/core/utils/app_router.dart';
 import 'package:lms/features/auth/presentation/manager/sign_in_cubit/sign_in_cubit.dart';
 
-class SignInForm extends StatelessWidget {
+class SignInForm extends StatefulWidget {
   final TextEditingController usernameController;
   final TextEditingController passwordController;
-  final _formKey = GlobalKey<FormState>(); // GlobalKey for the form
 
-  SignInForm({
+  const SignInForm({
     super.key,
     required this.usernameController,
     required this.passwordController,
   });
+
+  @override
+  State<SignInForm> createState() => _SignInFormState();
+}
+
+class _SignInFormState extends State<SignInForm> {
+  final _formKey = GlobalKey<FormState>();
+  // GlobalKey for the form
+  bool? isLicensor = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,61 +35,92 @@ class SignInForm extends StatelessWidget {
           showSnackBar(context, state.error, Colors.red);
         }
       },
-      child: Form(
-        key: _formKey, // Assign the key to the Form
+      child: SingleChildScrollView(
+        // Use SingleChildScrollView to avoid overflow
         child: Column(
           children: [
-            TextFormField(
-              controller: usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Username',
+            // Radio buttons without Expanded
+            RadioListTile<bool>(
+              title: const Text('Licensee'),
+              value: false, // Licensee corresponds to false
+              groupValue: isLicensor,
+              onChanged: (bool? value) {
+                setState(() {
+                  isLicensor = value;
+                  print(isLicensor);
+                });
+              },
+            ),
+            RadioListTile<bool>(
+              title: const Text('Licensor'),
+              value: true, // Licensor corresponds to true
+              groupValue: isLicensor,
+              onChanged: (bool? value) {
+                setState(() {
+                  isLicensor = value;
+                  print(isLicensor);
+                });
+              },
+            ),
+
+            Form(
+              key: _formKey, // Assign the key to the Form
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: widget.usernameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Username',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your username';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: widget.passwordController,
+                    decoration: const InputDecoration(labelText: 'Password'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      return null;
+                    },
+                    obscureText: true,
+                  ),
+                  BlocBuilder<SignInCubit, SignInState>(
+                    builder: (context, state) {
+                      return ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            // Validate the form
+                            context.read<SignInCubit>().signIn(
+                                username: widget.usernameController.text,
+                                password: widget.passwordController.text,
+                                isLicensor: isLicensor!);
+                          }
+                        },
+                        child: state is SignInLoading
+                            ? const CircularProgressIndicator()
+                            : const Text('Sign In'),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextButton(
+                    onPressed: () {
+                      context.go('/forgot-password');
+                    },
+                    child: const Text("Forgot Password?",
+                        style: TextStyle(color: Colors.blue)),
+                  ),
+                  const SizedBox(height: 10),
+                  const SignInAlternative(),
+                ],
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your username';
-                }
-                return null;
-              },
             ),
-            TextFormField(
-              controller: passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your password';
-                }
-                return null;
-              },
-              obscureText: true,
-            ),
-            BlocBuilder<SignInCubit, SignInState>(
-              builder: (context, state) {
-                return ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Validate the form
-                      context.read<SignInCubit>().signIn(
-                            username: usernameController.text,
-                            password: passwordController.text,
-                          );
-                    }
-                  },
-                  child: state is SignInLoading
-                      ? const CircularProgressIndicator()
-                      : const Text('Sign In'),
-                );
-              },
-            ),
-            const SizedBox(height: 10),
-            TextButton(
-              onPressed: () {
-                context.go('/forgot-password');
-              },
-              child: const Text("Forgot Password?",
-                  style: TextStyle(color: Colors.blue)),
-            ),
-            const SizedBox(height: 10),
-            const SignInAlternative(),
           ],
         ),
       ),
