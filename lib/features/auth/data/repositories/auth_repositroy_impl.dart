@@ -37,7 +37,8 @@ class AuthRepositoryImpl extends AuthRepository {
       String firstName = '',
       String lastName = '',
       String phone = '',
-      String email = ''}) async {
+      String email = '',
+      required bool isLicensor}) async {
     try {
       await authRemoteDataSource.registerUser(
           firstName: firstName,
@@ -45,7 +46,8 @@ class AuthRepositoryImpl extends AuthRepository {
           phone: phone,
           email: email,
           password: password,
-          username: username);
+          username: username,
+          isLicensor: isLicensor);
       return right(unit); // Return Unit from dartz
     } catch (e) {
       print("Error in registerUser: $e"); // Logging the error

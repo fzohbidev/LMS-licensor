@@ -14,7 +14,8 @@ abstract class AuthRemoteDataSource {
       String username,
       String password,
       String phone,
-      String email});
+      String email,
+      required bool isLicensor});
 }
 
 class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
@@ -58,7 +59,8 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
       String username = '',
       String password = '',
       String phone = '',
-      String email = ''}) async {
+      String email = '',
+      required bool isLicensor}) async {
     User user = User(
         firstName: firstName,
         lastName: lastName,
@@ -68,9 +70,14 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
         email: email,
         enabled: true,
         authorityIDs: [1]);
-    var result = await api.post(
-      endPoint: "api/auth/signup",
-      body: user.toMap(),
-    );
+    var result = !isLicensor
+        ? await api.post(
+            endPoint: "api/auth/signup",
+            body: [user.toMap()],
+          )
+        : await api.post(
+            endPoint: "licensor/api/auth/signup",
+            body: [user.toMap()],
+          );
   }
 }

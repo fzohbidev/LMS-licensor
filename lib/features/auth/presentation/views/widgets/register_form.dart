@@ -21,7 +21,7 @@ class _RegisterFormState extends State<RegisterForm> {
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
-
+  bool? isLicensor = false;
   @override
   Widget build(BuildContext context) {
     return BlocListener<RegistrationCubit, RegistrationState>(
@@ -37,6 +37,26 @@ class _RegisterFormState extends State<RegisterForm> {
         key: _formKey,
         child: Column(
           children: [
+            RadioListTile<bool>(
+              title: const Text('Licensee'),
+              value: false, // Licensee corresponds to false
+              groupValue: isLicensor,
+              onChanged: (bool? value) {
+                setState(() {
+                  isLicensor = value;
+                });
+              },
+            ),
+            RadioListTile<bool>(
+              title: const Text('Licensor'),
+              value: true, // Licensor corresponds to true
+              groupValue: isLicensor,
+              onChanged: (bool? value) {
+                setState(() {
+                  isLicensor = value;
+                });
+              },
+            ),
             TextFormField(
               controller: _usernameController,
               decoration: const InputDecoration(labelText: 'Username'),
@@ -104,13 +124,13 @@ class _RegisterFormState extends State<RegisterForm> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       await context.read<RegistrationCubit>().register(
-                            username: _usernameController.text,
-                            password: _passwordController.text,
-                            firstName: _firstNameController.text,
-                            lastName: _lastNameController.text,
-                            phone: _phoneController.text,
-                            email: _emailController.text,
-                          );
+                          username: _usernameController.text,
+                          password: _passwordController.text,
+                          firstName: _firstNameController.text,
+                          lastName: _lastNameController.text,
+                          phone: _phoneController.text,
+                          email: _emailController.text,
+                          isLicensor: isLicensor!);
                     }
                   },
                   child: state is RegistrationLoading

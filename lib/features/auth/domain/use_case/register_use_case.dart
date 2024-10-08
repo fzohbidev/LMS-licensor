@@ -9,20 +9,21 @@ class RegisterUseCase {
   RegisterUseCase({
     required this.authRepository,
   });
-  Future<Either<Failure, Unit>> call({
-    required String fn,
-    required String ln,
-    required String pw,
-    required String un,
-    required String phone,
-    required String email,
-  }) async {
+  Future<Either<Failure, Unit>> call(
+      {required String fn,
+      required String ln,
+      required String pw,
+      required String un,
+      required String phone,
+      required String email,
+      required bool isLicensor}) async {
     return await authRepository.registerUser(
         firstName: fn,
         lastName: ln,
         username: un,
         password: pw,
         phone: phone,
-        email: email);
+        email: email,
+        isLicensor: isLicensor);
   }
 }

@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lms/core/utils/api.dart';
-import 'package:lms/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:lms/features/user_management/data/data_sources/user_remote_data_source.dart';
 import 'package:lms/features/user_management/data/models/user_model.dart';
 
