@@ -151,6 +151,25 @@ class CustomExpandedDrawer extends StatelessWidget {
                         },
                       )
                     : Container(),
+                ListTile(
+                  title: Row(
+                    children: [
+                      Image.asset(
+                        'assets/images/poroduct_mngmt.png',
+                        height: 30,
+                        width: 30,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      const Text('Product Management'),
+                    ],
+                  ),
+                  onTap: () {
+                    GoRouter.of(context)
+                        .push(AppRouter.kRolesAndPermissionView);
+                  },
+                ),
                 userRole.contains('ROLE_ADMIN')
                     ? ExpansionTile(
                         title: const Row(
@@ -277,6 +296,16 @@ class CustomCollapsedDrawer extends StatelessWidget {
                         },
                       )
                     : Container(),
+                ListTile(
+                  title: Image.asset(
+                    'assets/images/poroduct_mngmt.png',
+                    height: 30,
+                    width: 30,
+                  ),
+                  onTap: () {
+                    GoRouter.of(context).push(AppRouter.kProductManagement);
+                  },
+                ),
                 // Ensure that userRole.contains is not null and valid
                 userRole.contains('ROLE_ADMIN')
                     ? ExpansionTile(

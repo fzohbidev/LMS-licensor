@@ -7,7 +7,7 @@ class Api {
 
   Api(this._dio);
 
-  Future<List<dynamic>> get(
+  Future<dynamic> get(
       {required String endPoint, @required String? token}) async {
     if (token != null) {
       _dio.options.headers['Authorization'] = 'Bearer $token';
@@ -57,6 +57,30 @@ class Api {
 
     // Otherwise, return the JSON map
     return response.data as Map<String, dynamic>;
+  }
+
+  Future<dynamic> post2({
+    required String endPoint,
+    required List<dynamic> body,
+    @required String? token,
+  }) async {
+    if (token != null) {
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+    }
+
+    var response = await _dio.post("$baseUrl$endPoint", data: body);
+    print("POST response: ${response.data}"); // Log the response
+
+    // Check the type of the response and return accordingly
+    if (response.data is String) {
+      return response.data;
+    } else if (response.data is List) {
+      return response.data; // Return the list if the response is a list
+    } else if (response.data is Map<String, dynamic>) {
+      return response.data; // Return the map if the response is a map
+    } else {
+      throw Exception("Unexpected response type: ${response.data.runtimeType}");
+    }
   }
 
   Future<dynamic> delete({

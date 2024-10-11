@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lms/core/utils/api.dart';
+import 'package:lms/features/product_management/data/data_source/products_remote_data_source.dart';
+import 'package:lms/features/product_management/data/repository/product_repository_impl.dart';
 import 'package:lms/features/roles_and_premission/data/remote_data_source/authority_remote_data_source.dart';
 import 'package:lms/features/roles_and_premission/data/remote_data_source/permission_remote_data_source.dart';
 import 'package:lms/features/roles_and_premission/data/repositories/authority_repository_impl.dart';
@@ -25,6 +27,13 @@ void setUpServiceLocator() {
   locator.registerSingleton<PermissionRepositoryImpl>(
     PermissionRepositoryImpl(
       permissionRemoteDataSource: PermissionRemoteDataSourceImpl(
+        api: locator.get<Api>(),
+      ),
+    ),
+  );
+  locator.registerSingleton<ProductRepositoryImpl>(
+    ProductRepositoryImpl(
+      productsRemoteDataSource: ProductsRemoteDataSourceImpl(
         api: locator.get<Api>(),
       ),
     ),

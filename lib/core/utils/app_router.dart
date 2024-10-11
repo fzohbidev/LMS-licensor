@@ -7,6 +7,9 @@ import 'package:lms/features/auth/presentation/views/widgets/reset_password_form
 import 'package:lms/features/home/presentation/views/home_view.dart';
 import 'package:lms/features/license_renewal/presentation/views/license_renewal.dart';
 import 'package:lms/features/payment/presentation/views/payment_view.dart';
+import 'package:lms/features/product_management/data/models/product_model.dart';
+import 'package:lms/features/product_management/presentation/views/home_view.dart';
+import 'package:lms/features/product_management/presentation/views/manage_product_view.dart';
 import 'package:lms/features/purchase_product/data/repository/product_repository.dart';
 import 'package:lms/features/purchase_product/presentation/pages/product_list_page.dart';
 import 'package:lms/features/roles_and_premission/data/models/authority.dart';
@@ -39,10 +42,12 @@ abstract class AppRouter {
   static const kUserManagement = '/product-list';
 
   static const kTeamManagement = '/team-management';
+  static const kProductManagement = '/productManagementView';
   static const kAddGroup = '/group_add';
   static const kGroupList = '/group_list_page';
 
   static const kGroupDetails = '/group_details';
+  static const kManageProductView = '/manageProductView';
 
   static final router = GoRouter(
     initialLocation: kRegister,
@@ -61,12 +66,16 @@ abstract class AppRouter {
         builder: (context, state) => const RolesAndPermissionDashboardView(),
       ),
       GoRoute(
+        path: kProductManagement,
+        builder: (context, state) => ProductManagementView(),
+      ),
+      GoRoute(
         path: kAddNewRoleView,
         builder: (context, state) => const AddNewRoleView(),
       ),
       GoRoute(
         path: kUpdateRoleView,
-        builder: (context, state) => UpdateRolesView(),
+        builder: (context, state) => const UpdateRolesView(),
       ),
       GoRoute(
         path: kManageRolesView,
@@ -147,6 +156,15 @@ abstract class AppRouter {
           final authority = state.extra as Authority;
           return UsersView(
             authority: authority,
+          );
+        },
+      ),
+      GoRoute(
+        path: kManageProductView,
+        builder: (BuildContext context, GoRouterState state) {
+          final product = state.extra as RegionProductModel;
+          return ManageProductView(
+            product: product,
           );
         },
       ),
