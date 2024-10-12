@@ -7,9 +7,9 @@ import 'package:lms/features/auth/presentation/views/widgets/reset_password_form
 import 'package:lms/features/home/presentation/views/home_view.dart';
 import 'package:lms/features/license_renewal/presentation/views/license_renewal.dart';
 import 'package:lms/features/payment/presentation/views/payment_view.dart';
-import 'package:lms/features/product_management/data/models/product_model.dart';
-import 'package:lms/features/product_management/presentation/views/home_view.dart';
-import 'package:lms/features/product_management/presentation/views/manage_product_view.dart';
+import 'package:lms/features/product_region_management/data/models/product_model.dart';
+import 'package:lms/features/product_region_management/presentation/views/home_view.dart';
+import 'package:lms/features/product_region_management/presentation/views/manage_product_view.dart';
 import 'package:lms/features/purchase_product/data/repository/product_repository.dart';
 import 'package:lms/features/purchase_product/presentation/pages/product_list_page.dart';
 import 'package:lms/features/roles_and_premission/data/models/authority.dart';

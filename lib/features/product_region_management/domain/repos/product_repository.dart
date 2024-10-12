@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:lms/core/errors/failure.dart';
-import 'package:lms/features/product_management/data/models/product_model.dart';
+import 'package:lms/features/product_region_management/data/models/product_model.dart';
 
 abstract class RegionProductRepository {
   Future<Either<Failure, List<RegionProductModel>>> getAllProducts();

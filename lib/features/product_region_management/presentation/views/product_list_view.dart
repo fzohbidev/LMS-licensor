@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lms/features/product_management/data/models/product_model.dart';
+import 'package:lms/features/product_region_management/data/models/product_model.dart';
 
 class ProductListView extends StatefulWidget {
   final List<RegionProductModel> productList;

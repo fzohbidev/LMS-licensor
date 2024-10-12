@@ -5,14 +5,21 @@ import 'package:lms/core/functions/set_up_service_locator.dart';
 import 'package:lms/core/simple_bloc_observer.dart';
 import 'package:lms/core/utils/api.dart';
 import 'package:lms/core/utils/app_router.dart';
-import 'package:lms/features/product_management/data/repository/product_repository_impl.dart';
-import 'package:lms/features/product_management/domain/use_case/add_product_use_case.dart';
-import 'package:lms/features/product_management/domain/use_case/delete_product_use_case.dart';
-import 'package:lms/features/product_management/domain/use_case/get_all_products_use_case.dart';
-import 'package:lms/features/product_management/domain/use_case/get_product_use_case.dart';
-import 'package:lms/features/product_management/domain/use_case/get_region_products_use_case.dart';
-import 'package:lms/features/product_management/domain/use_case/update_product_use_case.dart';
-import 'package:lms/features/product_management/presentation/manager/cubit/product_cubit.dart';
+import 'package:lms/features/product_region_management/data/repository/product_repository_impl.dart';
+import 'package:lms/features/product_region_management/data/repository/region_repository_impl.dart';
+import 'package:lms/features/product_region_management/domain/use_case/product_use_cases/add_product_use_case.dart';
+import 'package:lms/features/product_region_management/domain/use_case/product_use_cases/delete_product_use_case.dart';
+import 'package:lms/features/product_region_management/domain/use_case/product_use_cases/get_all_products_use_case.dart';
+import 'package:lms/features/product_region_management/domain/use_case/product_use_cases/get_product_use_case.dart';
+import 'package:lms/features/product_region_management/domain/use_case/product_use_cases/get_region_products_use_case.dart';
+import 'package:lms/features/product_region_management/domain/use_case/product_use_cases/update_product_use_case.dart';
+import 'package:lms/features/product_region_management/domain/use_case/region_use_cases/add_region_use_case.dart';
+import 'package:lms/features/product_region_management/domain/use_case/region_use_cases/delete_region_use_case.dart';
+import 'package:lms/features/product_region_management/domain/use_case/region_use_cases/get_all_regions_use_case.dart';
+import 'package:lms/features/product_region_management/domain/use_case/region_use_cases/get_region_use_case.dart';
+import 'package:lms/features/product_region_management/domain/use_case/region_use_cases/update_region_use_case.dart';
+import 'package:lms/features/product_region_management/presentation/manager/product_cubit/product_cubit.dart';
+import 'package:lms/features/product_region_management/presentation/manager/region_cubit/region_cubit.dart';
 import 'package:lms/features/purchase_product/application/providers/cart_provider.dart';
 import 'package:lms/features/roles_and_premission/data/remote_data_source/user_remote_data_source.dart';
 import 'package:lms/features/roles_and_premission/data/repositories/authority_repository_impl.dart';
@@ -99,6 +106,20 @@ class MyApp extends StatelessWidget {
             UpdateProductUseCase(
               productRepository: locator.get<ProductRepositoryImpl>(),
             ),
+          ),
+        ),
+        BlocProvider<RegionCubit>(
+          create: (context) => RegionCubit(
+            AddRegionUseCase(
+                regionRepository: locator.get<RegionRepositoryImpl>()),
+            DeleteRegionUseCase(
+                regionRepository: locator.get<RegionRepositoryImpl>()),
+            GetAllRegionsUseCase(
+                regionRepository: locator.get<RegionRepositoryImpl>()),
+            GetRegionUseCase(
+                regionRepository: locator.get<RegionRepositoryImpl>()),
+            UpdateRegionUseCase(
+                regionRepository: locator.get<RegionRepositoryImpl>()),
           ),
         ),
         // Add GroupBloc provider

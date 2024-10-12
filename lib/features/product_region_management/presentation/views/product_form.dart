@@ -3,13 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms/core/functions/show_snack_bar.dart';
 import 'package:lms/core/utils/form_validators.dart';
 import 'package:lms/features/product_region_management/data/models/product_model.dart';
+import 'package:lms/features/product_region_management/data/models/region_model.dart';
 import 'package:lms/features/product_region_management/presentation/manager/product_cubit/product_cubit.dart';
 
 import 'product_list_view.dart';
 
 class ProductForm extends StatefulWidget {
   final List<RegionProductModel> productList;
-  final List<String> regionList; // Pass the list of regions
+  final List<RegionModel> regionList; // Pass the list of regions
 
   const ProductForm({
     super.key,
@@ -32,7 +33,7 @@ class _ProductFormState extends State<ProductForm> {
   final TextEditingController regionNameController = TextEditingController();
   final TextEditingController zipCodeController = TextEditingController();
 
-  String? _selectedRegion; // Variable to store selected region
+  RegionModel? _selectedRegion; // Variable to store selected region
   bool _showRegionAttributes = false; // Flag to show/hide region attributes
 
   void _addProduct() {
@@ -43,8 +44,7 @@ class _ProductFormState extends State<ProductForm> {
         description: descriptionController.text,
         price: double.parse(priceController.text),
         imageUrl: imageController.text,
-        regionId: widget.regionList
-            .indexOf(_selectedRegion!), // Get the index of the selected region
+        regionId: _selectedRegion!.id!, // Get the index of the selected region
       ));
 
       context.read<ProductCubit>().addProduct(products: newProducts);
@@ -114,18 +114,19 @@ class _ProductFormState extends State<ProductForm> {
                   ),
                   // Dropdown for selecting region
                   DropdownButtonFormField<String>(
-                    value: _selectedRegion,
+                    value: _selectedRegion!.name!,
                     decoration:
                         const InputDecoration(labelText: 'Select Region'),
                     items: widget.regionList.map((region) {
                       return DropdownMenuItem<String>(
-                        value: region,
-                        child: Text(region),
+                        value: region.name,
+                        child: Text(region.name!),
                       );
                     }).toList(),
                     onChanged: (value) {
                       setState(() {
-                        _selectedRegion = value; // Set the selected region
+                        _selectedRegion!.name =
+                            value; // Set the selected region
                         // Show region attributes if a region is selected
                         _showRegionAttributes = value != null;
                       });

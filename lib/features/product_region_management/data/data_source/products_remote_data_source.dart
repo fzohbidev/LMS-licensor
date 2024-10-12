@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:lms/core/utils/api.dart';
 import 'package:lms/features/auth/data/data_sources/auth_remote_data_source.dart';
-import 'package:lms/features/product_management/data/models/product_model.dart';
+import 'package:lms/features/product_region_management/data/models/product_model.dart';
 
 abstract class ProductsRemoteDataSource {
   Future<List<RegionProductModel>> getAllProducts();

@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:lms/core/errors/failure.dart';
-import 'package:lms/features/product_management/data/data_source/products_remote_data_source.dart';
-import 'package:lms/features/product_management/data/models/product_model.dart';
-import 'package:lms/features/product_management/domain/repos/product_repository.dart';
+import 'package:lms/features/product_region_management/data/data_source/products_remote_data_source.dart';
+import 'package:lms/features/product_region_management/data/models/product_model.dart';
+import 'package:lms/features/product_region_management/domain/repos/product_repository.dart';
 
 class ProductRepositoryImpl extends RegionProductRepository {
   final ProductsRemoteDataSource productsRemoteDataSource;

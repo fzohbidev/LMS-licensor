@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms/core/functions/show_snack_bar.dart';
 import 'package:lms/core/utils/app_router.dart';
-import 'package:lms/features/product_management/data/models/product_model.dart';
-import 'package:lms/features/product_management/presentation/manager/cubit/product_cubit.dart';
-import 'package:lms/features/product_management/presentation/views/product_form.dart';
+import 'package:lms/features/product_region_management/data/models/product_model.dart';
+import 'package:lms/features/product_region_management/presentation/manager/product_cubit/product_cubit.dart';
+import 'package:lms/features/product_region_management/presentation/views/product_form.dart';
 
 class ProductManagementView extends StatefulWidget {
   List<RegionProductModel> productList = [];
