@@ -1,7 +1,7 @@
+import 'dart:convert'; // Import for jsonEncode
+
 import 'package:lms/core/utils/api.dart';
 import 'package:lms/features/user_groups/data/models/group_model.dart';
-
-import 'dart:convert'; // Import for jsonEncode
 
 class ApiService {
   final Api api;
@@ -82,7 +82,7 @@ class ApiService {
   Future<void> deleteGroup(int groupId) async {
     print("ID on DELETE $groupId");
     final response =
-        await api.delete(endPoint: 'api/auth/groups/$groupId', body: '');
+        await api.delete2(endPoint: 'api/auth/groups/$groupId', body: '');
     return response;
   }
 
@@ -106,7 +106,7 @@ class ApiService {
   // Method to revoke users from a group
   Future<void> revokeUserFromGroup(int groupId, List<int> userIds) async {
     try {
-      await api.delete(
+      await api.delete2(
         endPoint: 'api/auth/groups/$groupId/revoke-users',
         body: userIds, // Send userIds directly as a JSON array
       );

@@ -7,27 +7,28 @@ import 'package:lms/features/product_region_management/data/models/product_model
 import 'package:lms/features/product_region_management/presentation/manager/product_cubit/product_cubit.dart';
 
 class ManageProductView extends StatelessWidget {
-  ManageProductView({super.key, required this.product});
-  RegionProductModel product;
+  final RegionProductModel product;
+
+  const ManageProductView({super.key, required this.product});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: const Text('manage product'),
+        title: const Text('Manage Product'),
       ),
-      body: ManageProductViewBody(
-        product: product,
-      ),
+      body: ManageProductViewBody(product: product),
     );
   }
 }
 
 class ManageProductViewBody extends StatefulWidget {
-  const ManageProductViewBody({super.key, required this.product});
   final RegionProductModel product;
 
+  const ManageProductViewBody({super.key, required this.product});
+
   @override
-  State<ManageProductViewBody> createState() => _ManageProductViewBodyState();
+  _ManageProductViewBodyState createState() => _ManageProductViewBodyState();
 }
 
 class _ManageProductViewBodyState extends State<ManageProductViewBody> {
@@ -37,11 +38,9 @@ class _ManageProductViewBodyState extends State<ManageProductViewBody> {
   late TextEditingController descriptionController;
   late TextEditingController priceController;
   late TextEditingController imageController;
-  late TextEditingController regionNameController;
 
-  List<String> regionList = ['a', 'b'];
+  final List<String> regionList = ['a', 'b']; // Example region data
   String? _selectedRegion;
-  bool _showRegionAttributes = false;
 
   @override
   void initState() {
@@ -52,14 +51,12 @@ class _ManageProductViewBodyState extends State<ManageProductViewBody> {
     priceController =
         TextEditingController(text: widget.product.price.toString());
     imageController = TextEditingController(text: widget.product.imageUrl);
-
-    regionNameController =
-        TextEditingController(text: widget.product.regionId.toString());
+    _selectedRegion = regionList[widget.product.regionId]; // Initialize region
   }
 
   void _updateProduct() {
     if (_formKey.currentState!.validate()) {
-      RegionProductModel newProduct = RegionProductModel(
+      final updatedProduct = RegionProductModel(
         id: widget.product.id,
         name: nameController.text,
         description: descriptionController.text,
@@ -68,7 +65,7 @@ class _ManageProductViewBodyState extends State<ManageProductViewBody> {
         regionId: regionList.indexOf(_selectedRegion!),
       );
 
-      context.read<ProductCubit>().updateProduct(product: newProduct);
+      context.read<ProductCubit>().updateProduct(product: updatedProduct);
       _clearForm();
     }
   }
@@ -78,9 +75,9 @@ class _ManageProductViewBodyState extends State<ManageProductViewBody> {
     descriptionController.clear();
     priceController.clear();
     imageController.clear();
-    regionNameController.clear();
-    _selectedRegion = null;
-    _showRegionAttributes = false;
+    setState(() {
+      _selectedRegion = null;
+    });
   }
 
   @override
@@ -101,63 +98,82 @@ class _ManageProductViewBodyState extends State<ManageProductViewBody> {
             key: _formKey,
             child: ListView(
               children: [
-                TextFormField(
+                _buildTextFormField(
                   controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Product Name'),
+                  label: 'Product Name',
                   validator: (value) =>
                       FormValidators.validateString(value, 'Product Name'),
                 ),
-                TextFormField(
+                _buildTextFormField(
                   controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
+                  label: 'Description',
                   validator: (value) =>
                       FormValidators.validateString(value, 'Description'),
                 ),
-                TextFormField(
+                _buildTextFormField(
                   controller: priceController,
-                  decoration: const InputDecoration(labelText: 'Price'),
+                  label: 'Price',
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
                   validator: (value) =>
                       FormValidators.validateDouble(value, 'Price'),
                 ),
-                TextFormField(
+                _buildTextFormField(
                   controller: imageController,
-                  decoration: const InputDecoration(labelText: 'Image URL'),
+                  label: 'Image URL',
                   validator: (value) =>
                       FormValidators.validateString(value, 'Image URL'),
                 ),
-                DropdownButtonFormField<String>(
-                  value: _selectedRegion,
-                  decoration: const InputDecoration(labelText: 'Select Region'),
-                  items: regionList.map((region) {
-                    return DropdownMenuItem<String>(
-                      value: region,
-                      child: Text(region),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedRegion = value; // Set the selected region
-                    });
-                  },
-                  validator: (value) =>
-                      FormValidators.validateDropdown(value, 'region'),
-                ),
+                _buildRegionDropdown(),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _updateProduct,
-                  child: state is AddProductLoadingState
-                      ? const Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : const Text('Update Product'),
-                ),
+                _buildSubmitButton(state),
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String label,
+    TextInputType keyboardType = TextInputType.text,
+    required String? Function(String?) validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(labelText: label),
+      keyboardType: keyboardType,
+      validator: validator,
+    );
+  }
+
+  Widget _buildRegionDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedRegion,
+      decoration: const InputDecoration(labelText: 'Select Region'),
+      items: regionList.map((region) {
+        return DropdownMenuItem<String>(
+          value: region,
+          child: Text(region),
+        );
+      }).toList(),
+      onChanged: (value) {
+        setState(() {
+          _selectedRegion = value;
+        });
+      },
+      validator: (value) => FormValidators.validateDropdown(value, 'region'),
+    );
+  }
+
+  Widget _buildSubmitButton(ProductState state) {
+    return ElevatedButton(
+      onPressed: _updateProduct,
+      child: state is AddProductLoadingState
+          ? const Center(child: CircularProgressIndicator())
+          : const Text('Update Product'),
     );
   }
 
@@ -167,7 +183,6 @@ class _ManageProductViewBodyState extends State<ManageProductViewBody> {
     descriptionController.dispose();
     priceController.dispose();
     imageController.dispose();
-    regionNameController.dispose();
     super.dispose();
   }
 }

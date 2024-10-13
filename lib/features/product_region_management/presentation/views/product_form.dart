@@ -10,12 +10,12 @@ import 'product_list_view.dart';
 
 class ProductForm extends StatefulWidget {
   final List<RegionProductModel> productList;
-  final List<RegionModel> regionList; // Pass the list of regions
+  final List<RegionModel> regionList;
 
   const ProductForm({
     super.key,
     required this.productList,
-    required this.regionList, // Required parameter for regions
+    required this.regionList,
   });
 
   @override
@@ -33,23 +33,29 @@ class _ProductFormState extends State<ProductForm> {
   final TextEditingController regionNameController = TextEditingController();
   final TextEditingController zipCodeController = TextEditingController();
 
-  RegionModel? _selectedRegion; // Variable to store selected region
-  bool _showRegionAttributes = false; // Flag to show/hide region attributes
+  late RegionModel _selectedRegion;
+  bool _showRegionAttributes = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedRegion = RegionModel(id: null, name: null);
+  }
 
   void _addProduct() {
     if (_formKey.currentState!.validate()) {
-      List<RegionProductModel> newProducts = [];
-      newProducts.add(RegionProductModel(
-        name: nameController.text,
-        description: descriptionController.text,
-        price: double.parse(priceController.text),
-        imageUrl: imageController.text,
-        regionId: _selectedRegion!.id!, // Get the index of the selected region
-      ));
+      List<RegionProductModel> newProducts = [
+        RegionProductModel(
+          name: nameController.text,
+          description: descriptionController.text,
+          price: double.parse(priceController.text),
+          imageUrl: imageController.text,
+          regionId: _selectedRegion.id!,
+        )
+      ];
 
       context.read<ProductCubit>().addProduct(products: newProducts);
 
-      // Clear the form after submission
       _clearForm();
     }
   }
@@ -62,8 +68,10 @@ class _ProductFormState extends State<ProductForm> {
     countryController.clear();
     regionNameController.clear();
     zipCodeController.clear();
-    _selectedRegion = null; // Clear the selected region
-    _showRegionAttributes = false; // Hide region attributes
+    setState(() {
+      _selectedRegion = RegionModel(id: null, name: null);
+      _showRegionAttributes = false;
+    });
   }
 
   @override
@@ -75,7 +83,7 @@ class _ProductFormState extends State<ProductForm> {
           if (state is AddProductFailureState) {
             showSnackBar(context, state.errorMsg, Colors.red);
           } else if (state is AddProductSuccessState) {
-            showSnackBar(context, 'product added successfully', Colors.green);
+            showSnackBar(context, 'Product added successfully', Colors.green);
           }
         },
         builder: (context, state) {
@@ -85,105 +93,122 @@ class _ProductFormState extends State<ProductForm> {
               key: _formKey,
               child: ListView(
                 children: [
-                  TextFormField(
+                  _buildTextFormField(
                     controller: nameController,
-                    decoration:
-                        const InputDecoration(labelText: 'Product Name'),
+                    label: 'Product Name',
                     validator: (value) =>
                         FormValidators.validateString(value, 'Product Name'),
                   ),
-                  TextFormField(
+                  _buildTextFormField(
                     controller: descriptionController,
-                    decoration: const InputDecoration(labelText: 'Description'),
+                    label: 'Description',
                     validator: (value) =>
                         FormValidators.validateString(value, 'Description'),
                   ),
-                  TextFormField(
+                  _buildTextFormField(
                     controller: priceController,
-                    decoration: const InputDecoration(labelText: 'Price'),
+                    label: 'Price',
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
                     validator: (value) =>
                         FormValidators.validateDouble(value, 'Price'),
                   ),
-                  TextFormField(
+                  _buildTextFormField(
                     controller: imageController,
-                    decoration: const InputDecoration(labelText: 'Image URL'),
+                    label: 'Image URL',
                     validator: (value) =>
                         FormValidators.validateString(value, 'Image URL'),
                   ),
-                  // Dropdown for selecting region
-                  DropdownButtonFormField<String>(
-                    value: _selectedRegion!.name!,
-                    decoration:
-                        const InputDecoration(labelText: 'Select Region'),
-                    items: widget.regionList.map((region) {
-                      return DropdownMenuItem<String>(
-                        value: region.name,
-                        child: Text(region.name!),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedRegion!.name =
-                            value; // Set the selected region
-                        // Show region attributes if a region is selected
-                        _showRegionAttributes = value != null;
-                      });
-                    },
-                    validator: (value) =>
-                        FormValidators.validateDropdown(value, 'region'),
-                  ),
+                  _buildRegionDropdown(),
                   if (_showRegionAttributes) ...[
-                    // Region attributes fields
-                    TextFormField(
+                    _buildTextFormField(
                       controller: countryController,
-                      decoration: const InputDecoration(labelText: 'Country'),
+                      label: 'Country',
                       validator: (value) =>
                           FormValidators.validateString(value, 'Country'),
                     ),
-                    TextFormField(
+                    _buildTextFormField(
                       controller: regionNameController,
-                      decoration:
-                          const InputDecoration(labelText: 'Region Name'),
+                      label: 'Region Name',
                       validator: (value) =>
                           FormValidators.validateString(value, 'Region Name'),
                     ),
-                    TextFormField(
+                    _buildTextFormField(
                       controller: zipCodeController,
-                      decoration: const InputDecoration(labelText: 'Zip Code'),
+                      label: 'Zip Code',
                       keyboardType: TextInputType.number,
                       validator: (value) =>
                           FormValidators.validateInteger(value, 'Zip Code'),
                     ),
                   ],
                   const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _addProduct,
-                    child: state is AddProductLoadingState
-                        ? const Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : const Text('Insert Product'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ProductListView(productList: widget.productList),
-                        ),
-                      );
-                    },
-                    child: const Text('View Products'),
-                  ),
+                  _buildSubmitButton(state),
+                  _buildViewProductsButton(),
                 ],
               ),
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String label,
+    TextInputType keyboardType = TextInputType.text,
+    required String? Function(String?) validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(labelText: label),
+      keyboardType: keyboardType,
+      validator: validator,
+    );
+  }
+
+  Widget _buildRegionDropdown() {
+    return DropdownButtonFormField<String>(
+      decoration: const InputDecoration(labelText: 'Select Region'),
+      items: widget.regionList.map((region) {
+        return DropdownMenuItem<String>(
+          value: region.name,
+          child: Text(region.name ?? ''),
+        );
+      }).toList(),
+      onChanged: (value) {
+        setState(() {
+          _showRegionAttributes = value != null;
+          _selectedRegion = widget.regionList.firstWhere(
+            (region) => region.name == value,
+          );
+        });
+      },
+      validator: (value) => FormValidators.validateDropdown(value, 'region'),
+    );
+  }
+
+  Widget _buildSubmitButton(ProductState state) {
+    return ElevatedButton(
+      onPressed: _addProduct,
+      child: state is AddProductLoadingState
+          ? const Center(child: CircularProgressIndicator())
+          : const Text('Insert Product'),
+    );
+  }
+
+  Widget _buildViewProductsButton() {
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                ProductListView(productList: widget.productList),
+          ),
+        );
+      },
+      child: const Text('View Products'),
     );
   }
 }

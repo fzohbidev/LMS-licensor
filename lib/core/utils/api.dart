@@ -17,6 +17,28 @@ class Api {
     return response.data as List<dynamic>;
   }
 
+  Future<dynamic> delete2({
+    required String endPoint,
+    required dynamic body,
+    Options? options,
+  }) async {
+    try {
+      final response = await _dio.delete(
+        "$baseUrl$endPoint",
+        data: body,
+        options: options,
+      );
+      return response.data;
+    } catch (e) {
+      if (e is DioException && e.response?.statusCode == 404) {
+        print('Resource not found (404).'); // Specific handling for 404 errors
+      } else {
+        print('Failed to delete: $e'); // General error handling
+      }
+      throw Exception('Failed to delete: $e');
+    }
+  }
+
   Future<Map<String, dynamic>> getUser({
     required String endPoint,
     String? token,

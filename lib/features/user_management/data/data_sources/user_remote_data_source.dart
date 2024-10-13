@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:lms/core/utils/api.dart';
 import 'package:lms/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:lms/features/user_management/data/models/license_model.dart';
-import 'package:lms/features/user_management/domain/entities/user.dart';
 
 import '../models/user_model.dart';
 
@@ -70,14 +69,14 @@ class UserManagementRemoteDataSource {
   Future<String> removeUser(int userId) async {
     try {
       var response =
-          await api.delete(endPoint: "/api/auth/delete/$userId", body: '');
+          await api.delete2(endPoint: "/api/auth/delete/$userId", body: '');
 
       print("Response data: $response");
 
       return "User removed successfully";
     } catch (e) {
       print("Failed to remove user: $e");
-      throw e; // Re-throw the exception to handle it in the calling code
+      rethrow; // Re-throw the exception to handle it in the calling code
     }
   }
 
@@ -117,17 +116,11 @@ class UserManagementRemoteDataSource {
       var response = await api.getUser(
           endPoint: "api/auth/user/profile/$username", token: jwtToken);
 
-      // print("Response from API: $response");
-
-      if (response == null) {
-        throw Exception('Response is null');
-      }
-
       // Convert the Map to UserModel
       return response;
     } catch (e) {
       print("Failed to get user profile: $e");
-      throw e;
+      rethrow;
     }
   }
 
@@ -155,12 +148,8 @@ class UserManagementRemoteDataSource {
 
       print("Response from API: $response");
 
-      if (response == null) {
-        throw Exception('Response is null');
-      }
-
       // Convert the Map response to a list of LicenseModel
-      List<LicenseModel> licenses = (response as List)
+      List<LicenseModel> licenses = (response)
           .map((licenseData) =>
               LicenseModel.fromJson(licenseData as Map<String, dynamic>))
           .toList();
