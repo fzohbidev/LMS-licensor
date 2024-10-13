@@ -1,12 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lms/core/functions/show_snack_bar.dart';
+import 'package:lms/core/utils/app_router.dart';
 import 'package:lms/features/product_region_management/data/models/region_model.dart';
 import 'package:lms/features/product_region_management/presentation/manager/region_cubit/region_cubit.dart';
 
-class RegionManagementView extends StatelessWidget {
+class RegionManagementView extends StatefulWidget {
   RegionManagementView({super.key, this.regions = const []});
   List<RegionModel> regions;
+
+  @override
+  State<RegionManagementView> createState() => _RegionManagementViewState();
+}
+
+class _RegionManagementViewState extends State<RegionManagementView> {
+  void _navigateToAddProduct() {
+    GoRouter.of(context).push(AppRouter.kAddRegionView);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +26,12 @@ class RegionManagementView extends StatelessWidget {
         title: const Text('Manage Region'),
       ),
       body: RegionManagementViewBody(
-        regions: regions,
+        regions: widget.regions,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToAddProduct,
+        tooltip: 'Add Product',
+        child: const Icon(Icons.add),
       ),
     );
   }

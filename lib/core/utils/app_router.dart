@@ -9,6 +9,7 @@ import 'package:lms/features/license_renewal/presentation/views/license_renewal.
 import 'package:lms/features/payment/presentation/views/payment_view.dart';
 import 'package:lms/features/product_region_management/data/models/product_model.dart';
 import 'package:lms/features/product_region_management/data/models/region_model.dart';
+import 'package:lms/features/product_region_management/presentation/views/add_new_region_view.dart';
 import 'package:lms/features/product_region_management/presentation/views/home_view.dart';
 import 'package:lms/features/product_region_management/presentation/views/manage_product_view.dart';
 import 'package:lms/features/product_region_management/presentation/views/region_management_view.dart';
@@ -38,6 +39,7 @@ class AppRouter {
 
   static const kProductManagement = '/productManagementView';
   static const kRegionManagement = '/regionManagementView';
+  static const kAddRegionView = '/addRegionView';
 
   final UserRepositoryManagementImpl userRepository;
   final ApiService apiService;
@@ -63,6 +65,10 @@ class AppRouter {
         GoRoute(
           path: kSignIn,
           builder: (context, state) => const SignIn(),
+        ),
+        GoRoute(
+          path: kAddRegionView,
+          builder: (context, state) => const AddNewRegionView(),
         ),
         GoRoute(
           path: kRolesAndPermissionView,
