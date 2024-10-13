@@ -8,8 +8,10 @@ import 'package:lms/features/home/presentation/views/home_view.dart';
 import 'package:lms/features/license_renewal/presentation/views/license_renewal.dart';
 import 'package:lms/features/payment/presentation/views/payment_view.dart';
 import 'package:lms/features/product_region_management/data/models/product_model.dart';
+import 'package:lms/features/product_region_management/data/models/region_model.dart';
 import 'package:lms/features/product_region_management/presentation/views/home_view.dart';
 import 'package:lms/features/product_region_management/presentation/views/manage_product_view.dart';
+import 'package:lms/features/product_region_management/presentation/views/region_management_view.dart';
 import 'package:lms/features/purchase_product/data/repository/product_repository.dart';
 import 'package:lms/features/purchase_product/presentation/pages/product_list_page.dart';
 import 'package:lms/features/roles_and_premission/data/models/authority.dart';
@@ -35,6 +37,7 @@ class AppRouter {
   static const kManageProductView = '/manageProductView';
 
   static const kProductManagement = '/productManagementView';
+  static const kRegionManagement = '/regionManagementView';
 
   final UserRepositoryManagementImpl userRepository;
   final ApiService apiService;
@@ -53,6 +56,10 @@ class AppRouter {
           path: kRegister,
           builder: (context, state) => const RegisterScreen(),
         ),
+        // GoRoute(
+        //   path: kRegionManagement,
+        //   builder: (context, state) => const RegisterScreen(),
+        // ),
         GoRoute(
           path: kSignIn,
           builder: (context, state) => const SignIn(),
@@ -175,6 +182,13 @@ class AppRouter {
             return ManageProductView(
               product: product,
             );
+          },
+        ),
+        GoRoute(
+          path: kRegionManagement,
+          builder: (BuildContext context, GoRouterState state) {
+            final regions = state.extra as List<RegionModel>;
+            return RegionManagementView(regions: regions);
           },
         ),
         GoRoute(

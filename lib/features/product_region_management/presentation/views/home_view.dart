@@ -68,7 +68,10 @@ class _ProductManagementViewState extends State<ProductManagementView> {
         title: const Text('Product Management'),
         actions: [
           IconButton(
-            onPressed: () {}, // Add region management navigation
+            onPressed: () {
+              GoRouter.of(context)
+                  .push(AppRouter.kRegionManagement, extra: widget.regionList);
+            }, // Add region management navigation
             icon: const Row(
               children: [
                 Text('Manage regions'),
