@@ -4,6 +4,7 @@ import 'package:lms/features/auth/presentation/manager/sign_in_cubit/sign_in_cub
 import 'package:shared_preferences/shared_preferences.dart';
 
 String jwtToken = '';
+bool isLicensor = false;
 
 abstract class AuthRemoteDataSource {
   Future<void> loginUser(
@@ -46,6 +47,8 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
             },
           );
     userRole = result['roles'];
+    isLicensor = result['isLicensor'];
+    print(isLicensor);
     print(userRole);
     // Save the JWT token using SharedPreferences
     jwtToken = result['jwtToken'];

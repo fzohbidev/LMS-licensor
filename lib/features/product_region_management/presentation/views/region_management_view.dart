@@ -98,14 +98,14 @@ class _RegionManagementViewBodyState extends State<RegionManagementViewBody> {
                               ],
                             ),
                           ),
-                          // IconButton(
-                          //   icon: const Icon(Icons.settings),
-                          //   onPressed: () {
-                          //     GoRouter.of(context).push(
-                          //         AppRouter.kManageProductView,
-                          //         extra: product);
-                          //   },
-                          // ),
+                          IconButton(
+                            icon: const Icon(Icons.settings),
+                            onPressed: () {
+                              GoRouter.of(context).push(
+                                  AppRouter.kManageRegionView,
+                                  extra: region);
+                            },
+                          ),
                           IconButton(
                             icon: deletingRegionId == region.id
                                 ? const CircularProgressIndicator()

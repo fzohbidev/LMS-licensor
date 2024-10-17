@@ -12,6 +12,7 @@ import 'package:lms/features/product_region_management/data/models/region_model.
 import 'package:lms/features/product_region_management/presentation/views/add_new_region_view.dart';
 import 'package:lms/features/product_region_management/presentation/views/home_view.dart';
 import 'package:lms/features/product_region_management/presentation/views/manage_product_view.dart';
+import 'package:lms/features/product_region_management/presentation/views/manage_region_view.dart';
 import 'package:lms/features/product_region_management/presentation/views/region_management_view.dart';
 import 'package:lms/features/purchase_product/data/repository/product_repository.dart';
 import 'package:lms/features/purchase_product/presentation/pages/product_list_page.dart';
@@ -36,6 +37,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppRouter {
   static const kManageProductView = '/manageProductView';
+  static const kManageRegionView = '/manageRegionView';
 
   static const kProductManagement = '/productManagementView';
   static const kRegionManagement = '/regionManagementView';
@@ -187,6 +189,15 @@ class AppRouter {
             final product = state.extra as RegionProductModel;
             return ManageProductView(
               product: product,
+            );
+          },
+        ),
+        GoRoute(
+          path: kManageRegionView,
+          builder: (BuildContext context, GoRouterState state) {
+            final region = state.extra as RegionModel;
+            return ManageRegionView(
+              region: region,
             );
           },
         ),
