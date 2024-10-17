@@ -4,6 +4,8 @@ import 'package:lms/features/auth/presentation/views/forgot_password_page.dart';
 import 'package:lms/features/auth/presentation/views/register_screen.dart';
 import 'package:lms/features/auth/presentation/views/signin_screen.dart';
 import 'package:lms/features/auth/presentation/views/widgets/reset_password_form.dart';
+import 'package:lms/features/auth_code/presentation/pages/form_page.dart';
+import 'package:lms/features/auth_code/presentation/view_model/authorization_code_view_model.dart';
 import 'package:lms/features/home/presentation/views/home_view.dart';
 import 'package:lms/features/license_renewal/presentation/views/license_renewal.dart';
 import 'package:lms/features/payment/presentation/views/payment_view.dart';
@@ -33,6 +35,7 @@ import 'package:lms/features/user_management/domain/use_cases/get_user_profile_d
 import 'package:lms/features/user_management/domain/use_cases/update_user_profile.dart';
 import 'package:lms/features/user_management/presentation/pages/user_management_page.dart';
 import 'package:lms/features/user_management/presentation/pages/user_profile_page.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppRouter {
@@ -209,6 +212,15 @@ class AppRouter {
           },
         ),
         GoRoute(
+          path: kLicensorAuthGenerator,
+          builder: (context, state) {
+            final viewModel = Provider.of<AuthorizationCodeViewModel>(context);
+            return FormPage(
+              viewModel: viewModel,
+            );
+          },
+        ),
+        GoRoute(
           path: kLicenseRenewalView,
           builder: (context, state) => const LicenseRenewal(),
         ),
@@ -238,6 +250,8 @@ class AppRouter {
   static const kProductList = '/product-list';
   static const kUserManagement = '/user-management';
   static const kTeamManagement = '/team-management';
+  static const kLicensorAuthGenerator = '/generate-auth-code';
+
   static const kAddGroup = '/group_add';
   static const kGroupList = '/group_list_page';
   static const kGroupDetails = '/group_details';

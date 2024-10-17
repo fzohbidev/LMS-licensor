@@ -32,6 +32,7 @@ class ProductsRemoteDataSourceImpl extends ProductsRemoteDataSource {
     for (var productData in result) {
       products.add(RegionProductModel.fromMap(productData));
     }
+
     return products;
   }
 
