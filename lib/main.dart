@@ -142,6 +142,7 @@ import 'package:lms/core/functions/set_up_service_locator.dart';
 import 'package:lms/core/simple_bloc_observer.dart';
 import 'package:lms/core/utils/api.dart';
 import 'package:lms/core/utils/app_router.dart';
+import 'package:lms/features/auth/presentation/manager/user_state.dart';
 import 'package:lms/features/product_region_management/data/repository/product_repository_impl.dart';
 import 'package:lms/features/product_region_management/data/repository/region_repository_impl.dart';
 import 'package:lms/features/product_region_management/domain/use_case/product_use_cases/add_product_use_case.dart';
@@ -295,6 +296,9 @@ class MyApp extends StatelessWidget {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => CartProvider()),
+          ChangeNotifierProvider(
+            create: (context) => UserState(),
+          ),
         ],
         child: MaterialApp.router(
           routerConfig: router,

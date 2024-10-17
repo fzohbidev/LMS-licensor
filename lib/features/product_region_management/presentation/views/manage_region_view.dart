@@ -70,7 +70,7 @@ class _ManageRegionViewBodyState extends State<ManageRegionViewBody> {
         if (state is UpdateRegionFailureState) {
           showSnackBar(context, state.errorMsg, Colors.red);
         } else if (state is UpdateRegionSuccessState) {
-          showSnackBar(context, 'Product updated successfully', Colors.green);
+          showSnackBar(context, 'Region updated successfully', Colors.green);
           GoRouter.of(context).pop();
         }
       },

@@ -1,10 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:lms/core/utils/api.dart';
 import 'package:lms/features/auth/data/models/user_model.dart';
 import 'package:lms/features/auth/presentation/manager/sign_in_cubit/sign_in_cubit.dart';
+import 'package:lms/features/auth/presentation/manager/user_state.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String jwtToken = '';
-bool isLicensor = false;
 
 abstract class AuthRemoteDataSource {
   Future<void> loginUser(
@@ -22,8 +24,8 @@ abstract class AuthRemoteDataSource {
 
 class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
   final Api api;
-
-  AuthRemoteDataSourceImpl({required this.api});
+  final BuildContext context;
+  AuthRemoteDataSourceImpl(this.context, {required this.api});
 
   @override
   Future<void> loginUser(
@@ -47,7 +49,12 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
             },
           );
     userRole = result['roles'];
-    isLicensor = result['isLicensor'];
+    // isLicensor = result['isLicensor'];
+
+    Provider.of<UserState>(context, listen: false)
+        .setUserInfo(result['isLicensor']
+            // List<String>.from(result['roles']),
+            );
     print(isLicensor);
     print(userRole);
     // Save the JWT token using SharedPreferences
