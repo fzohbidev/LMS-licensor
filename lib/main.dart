@@ -143,6 +143,9 @@ import 'package:lms/core/simple_bloc_observer.dart';
 import 'package:lms/core/utils/api.dart';
 import 'package:lms/core/utils/app_router.dart';
 import 'package:lms/features/auth/presentation/manager/user_state.dart';
+import 'package:lms/features/auth_code/data/repositories/authorization_code_repository_impl.dart';
+import 'package:lms/features/auth_code/domain/repositories/authorization_code_repository.dart';
+import 'package:lms/features/auth_code/presentation/view_model/authorization_code_view_model.dart';
 import 'package:lms/features/product_region_management/data/repository/product_repository_impl.dart';
 import 'package:lms/features/product_region_management/data/repository/region_repository_impl.dart';
 import 'package:lms/features/product_region_management/domain/use_case/product_use_cases/add_product_use_case.dart';
@@ -298,6 +301,17 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (context) => CartProvider()),
           ChangeNotifierProvider(
             create: (context) => UserState(),
+          ),
+          // Provide the repository
+          Provider<AuthorizationCodeRepository>(
+            create: (_) =>
+                AuthorizationCodeRepositoryImpl(), // Replace with your repository implementation
+          ),
+          // Provide the view model and pass the repository
+          ChangeNotifierProvider<AuthorizationCodeViewModel>(
+            create: (context) => AuthorizationCodeViewModel(
+              Provider.of<AuthorizationCodeRepository>(context, listen: false),
+            ),
           ),
         ],
         child: MaterialApp.router(
