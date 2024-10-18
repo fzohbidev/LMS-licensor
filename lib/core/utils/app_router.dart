@@ -16,7 +16,6 @@ import 'package:lms/features/product_region_management/presentation/views/home_v
 import 'package:lms/features/product_region_management/presentation/views/manage_product_view.dart';
 import 'package:lms/features/product_region_management/presentation/views/manage_region_view.dart';
 import 'package:lms/features/product_region_management/presentation/views/region_management_view.dart';
-import 'package:lms/features/purchase_product/data/repository/product_repository.dart';
 import 'package:lms/features/purchase_product/presentation/pages/product_list_page.dart';
 import 'package:lms/features/roles_and_premission/data/models/authority.dart';
 import 'package:lms/features/roles_and_premission/presentation/views/add_new_role_view.dart';
@@ -166,9 +165,9 @@ class AppRouter {
         GoRoute(
           path: kProductList,
           builder: (context, state) {
-            final productRepository = ProductRepository();
-            final products = productRepository.getProducts();
-            return ProductListPage(products: products);
+            //final productRepository = ProductRepository();
+            //final products = productRepository.getProducts();
+            return const ProductListPage();
           },
         ),
         GoRoute(
