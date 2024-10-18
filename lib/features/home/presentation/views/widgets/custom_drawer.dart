@@ -210,14 +210,31 @@ class _CustomExpandedDrawerState extends State<CustomExpandedDrawer> {
                       title: const Row(
                         children: [
                           Icon(Icons.generating_tokens_sharp),
-                          Text('Authorization Code'),
+                          Text('Generate Auth Code'),
                           SizedBox(
                             width: 5,
                           ),
                         ],
                       ),
                       onTap: () {
-                        context.go(AppRouter.kLicensorAuthGenerator);
+                        GoRouter.of(context)
+                            .push(AppRouter.kLicensorAuthGenerator);
+                      },
+                    ),
+                  if (userState.isLicensor)
+                    ListTile(
+                      title: const Row(
+                        children: [
+                          Icon(Icons.token_outlined),
+                          Text('Authorization Codes'),
+                          SizedBox(
+                            width: 5,
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        GoRouter.of(context)
+                            .push(AppRouter.kLicensorListAuthCodes);
                       },
                     ),
                   ListTile(
@@ -358,7 +375,23 @@ class _CustomCollapsedDrawerState extends State<CustomCollapsedDrawer> {
                         ],
                       ),
                       onTap: () {
-                        context.go(AppRouter.kLicensorAuthGenerator);
+                        GoRouter.of(context)
+                            .push(AppRouter.kLicensorAuthGenerator);
+                      },
+                    ),
+                  if (userState.isLicensor)
+                    ListTile(
+                      title: const Row(
+                        children: [
+                          Icon(Icons.token_outlined),
+                          SizedBox(
+                            width: 5,
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        GoRouter.of(context)
+                            .push(AppRouter.kLicensorListAuthCodes);
                       },
                     ),
                   // Ensure that userRole.contains is not null and valid

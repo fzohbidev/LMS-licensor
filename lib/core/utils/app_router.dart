@@ -5,6 +5,7 @@ import 'package:lms/features/auth/presentation/views/register_screen.dart';
 import 'package:lms/features/auth/presentation/views/signin_screen.dart';
 import 'package:lms/features/auth/presentation/views/widgets/reset_password_form.dart';
 import 'package:lms/features/auth_code/presentation/pages/form_page.dart';
+import 'package:lms/features/auth_code/presentation/pages/list_auth_codes.dart';
 import 'package:lms/features/auth_code/presentation/view_model/authorization_code_view_model.dart';
 import 'package:lms/features/home/presentation/views/home_view.dart';
 import 'package:lms/features/license_renewal/presentation/views/license_renewal.dart';
@@ -221,6 +222,12 @@ class AppRouter {
           },
         ),
         GoRoute(
+          path: kLicensorListAuthCodes,
+          builder: (context, state) {
+            return AuthorizationCodePage();
+          },
+        ),
+        GoRoute(
           path: kLicenseRenewalView,
           builder: (context, state) => const LicenseRenewal(),
         ),
@@ -251,6 +258,7 @@ class AppRouter {
   static const kUserManagement = '/user-management';
   static const kTeamManagement = '/team-management';
   static const kLicensorAuthGenerator = '/generate-auth-code';
+  static const kLicensorListAuthCodes = '/list-auth-codes';
 
   static const kAddGroup = '/group_add';
   static const kGroupList = '/group_list_page';

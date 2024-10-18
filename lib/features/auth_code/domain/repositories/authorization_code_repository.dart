@@ -20,4 +20,7 @@ abstract class AuthorizationCodeRepository {
       int licenseeId,
       int productId,
       double discount);
+
+  Future<List<AuthorizationCode>> getAllAuthorizationCodes();
+  Future<AuthorizationCode?> getAuthorizationCodeByLicenseeId(int licenseeId);
 }

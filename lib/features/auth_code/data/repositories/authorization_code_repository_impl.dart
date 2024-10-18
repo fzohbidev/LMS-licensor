@@ -84,4 +84,34 @@ class AuthorizationCodeRepositoryImpl implements AuthorizationCodeRepository {
       throw Exception('Failed to generate combined code');
     }
   }
+
+  @override
+  Future<List<AuthorizationCode>> getAllAuthorizationCodes() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/'),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+      return data.map((item) => AuthorizationCode.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load authorization codes');
+    }
+  }
+
+  @override
+  Future<AuthorizationCode?> getAuthorizationCodeByLicenseeId(
+      int licenseeId) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/licensee/$licenseeId'),
+      headers: {'Content-Type': 'application/json'},
+    );
+    print(response.body);
+    if (response.statusCode == 200) {
+      return AuthorizationCode.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load authorization code');
+    }
+  }
 }
