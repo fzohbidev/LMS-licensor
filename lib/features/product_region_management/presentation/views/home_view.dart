@@ -3,11 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms/core/functions/show_snack_bar.dart';
 import 'package:lms/core/utils/app_router.dart';
+import 'package:lms/features/auth/presentation/manager/user_state.dart';
 import 'package:lms/features/product_region_management/data/models/product_model.dart';
 import 'package:lms/features/product_region_management/data/models/region_model.dart';
 import 'package:lms/features/product_region_management/presentation/manager/product_cubit/product_cubit.dart';
 import 'package:lms/features/product_region_management/presentation/manager/region_cubit/region_cubit.dart';
 import 'package:lms/features/product_region_management/presentation/views/product_form.dart';
+import 'package:provider/provider.dart';
 
 class ProductManagementView extends StatefulWidget {
   List<RegionProductModel> productList = [];
@@ -67,18 +69,11 @@ class _ProductManagementViewState extends State<ProductManagementView> {
       appBar: AppBar(
         title: const Text('Product Management'),
         actions: [
-          IconButton(
-            onPressed: () {
-              GoRouter.of(context)
-                  .push(AppRouter.kRegionManagement, extra: widget.regionList);
-            }, // Add region management navigation
-            icon: const Row(
-              children: [
-                Text('Manage regions'),
-                Icon(Icons.settings),
-              ],
-            ),
-          ),
+          Consumer<UserState>(builder: (context, userState, child) {
+            return userState.isLicensor
+                ? ManageRegionButton(widget: widget)
+                : const SizedBox();
+          }),
         ],
       ),
       body: _buildBody(filteredProducts),
@@ -231,6 +226,31 @@ class _ProductManagementViewState extends State<ProductManagementView> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class ManageRegionButton extends StatelessWidget {
+  const ManageRegionButton({
+    super.key,
+    required this.widget,
+  });
+
+  final ProductManagementView widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        GoRouter.of(context)
+            .push(AppRouter.kRegionManagement, extra: widget.regionList);
+      }, // Add region management navigation
+      icon: const Row(
+        children: [
+          Text('Manage regions'),
+          Icon(Icons.settings),
+        ],
       ),
     );
   }

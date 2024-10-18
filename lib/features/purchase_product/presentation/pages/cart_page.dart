@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:lms/features/product_region_management/data/models/product_model.dart';
 import 'package:lms/features/purchase_product/application/providers/cart_provider.dart';
-import 'package:lms/features/purchase_product/domain/entities/product.dart';
 import 'package:lms/features/purchase_product/presentation/pages/Check_out_Page.dart';
+import 'package:provider/provider.dart';
 
 class CartPage extends StatelessWidget {
+  const CartPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your Cart'),
+        title: const Text('Your Cart'),
       ),
       body: ListView.builder(
         itemCount: cartProvider.cartItems.length,
@@ -24,14 +26,14 @@ class CartPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: Icon(Icons.update),
+                  icon: const Icon(Icons.update),
                   onPressed: () {
                     _showUpdateDialog(context, cartItem.product,
                         cartItem.quantity, cartProvider);
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete),
+                  icon: const Icon(Icons.delete),
                   onPressed: () {
                     cartProvider.removeProduct(cartItem.product);
                   },
@@ -49,7 +51,8 @@ class CartPage extends StatelessWidget {
             children: [
               Text(
                 'Total: \$${cartProvider.totalAmount.toStringAsFixed(2)}',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -58,7 +61,7 @@ class CartPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => CheckoutPage()),
                   );
                 },
-                child: Text('Checkout'),
+                child: const Text('Checkout'),
               ),
             ],
           ),
@@ -67,7 +70,7 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  void _showUpdateDialog(BuildContext context, Product product,
+  void _showUpdateDialog(BuildContext context, RegionProductModel product,
       int currentQuantity, CartProvider cartProvider) {
     final TextEditingController controller =
         TextEditingController(text: currentQuantity.toString());
@@ -76,18 +79,18 @@ class CartPage extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Update Quantity'),
+          title: const Text('Update Quantity'),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: 'Quantity'),
+            decoration: const InputDecoration(labelText: 'Quantity'),
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -97,7 +100,7 @@ class CartPage extends StatelessWidget {
                 }
                 Navigator.of(context).pop();
               },
-              child: Text('Update'),
+              child: const Text('Update'),
             ),
           ],
         );
