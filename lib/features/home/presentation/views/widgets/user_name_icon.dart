@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms/core/utils/app_router.dart';
-import 'package:lms/core/utils/styles.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserNameIcon extends StatelessWidget {
   final String username;
@@ -29,9 +29,8 @@ class UserNameIcon extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            // USERNAME FROM SHARED PREFERENCE
-            username,
-            style: TextStyle(fontSize: 16, color: Colors.white),
+            username, // Display username initial
+            style: const TextStyle(fontSize: 16, color: Colors.white),
           ),
         ),
       ),
@@ -39,18 +38,25 @@ class UserNameIcon extends StatelessWidget {
   }
 
   void _showPopupMenu(BuildContext context) {
+    final RenderBox overlay =
+        Overlay.of(context)!.context.findRenderObject() as RenderBox;
+
     showMenu(
       context: context,
       position: RelativeRect.fromLTRB(
-          100, 80, 100, 0), // Adjust the position of the popup
+        overlay.size.width - 40, // Align popup menu to the right of the screen
+        80,
+        10,
+        0,
+      ),
       items: [
-        PopupMenuItem(
-          child: Text("Manage Profile"),
+        const PopupMenuItem(
           value: "manage_profile",
+          child: Text("Manage Profile"),
         ),
-        PopupMenuItem(
-          child: Text("Logout"),
+        const PopupMenuItem(
           value: "logout",
+          child: Text("Logout"),
         ),
       ],
     ).then((value) {
@@ -63,13 +69,21 @@ class UserNameIcon extends StatelessWidget {
   }
 
   void _navigateToManageProfile(BuildContext context, String username) {
-    print("IM IN the username is $username");
-
+    // Navigate to the user profile page
     GoRouter.of(context).go('${AppRouter.kUserProfile}/$username');
   }
 
-  void _performLogout(BuildContext context) {
-    // Handle logout functionality here
-    print("User logged out");
+  void _performLogout(BuildContext context) async {
+    // Handle logout by clearing user session (e.g., shared preferences)
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Clear all saved data (like session or token)
+
+    // Navigate to the login page or another appropriate page
+    GoRouter.of(context).go(AppRouter.kSignIn);
+
+    // Optional: Show a message to confirm logout
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Logged out successfully')),
+    );
   }
 }

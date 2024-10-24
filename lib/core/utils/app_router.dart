@@ -29,12 +29,18 @@ import 'package:lms/features/user_groups/data/models/group_model.dart';
 import 'package:lms/features/user_groups/presentation/pages/group_list_page.dart';
 import 'package:lms/features/user_groups/presentation/widgets/group_edit_page.dart';
 import 'package:lms/features/user_groups/presentation/widgets/group_form.dart';
+import 'package:lms/features/user_management/data/models/user_model.dart';
 import 'package:lms/features/user_management/data/repositories/user_repository.dart';
+import 'package:lms/features/user_management/domain/use_cases/add_user.dart';
 import 'package:lms/features/user_management/domain/use_cases/get_user_licenses.dart';
 import 'package:lms/features/user_management/domain/use_cases/get_user_profile_data.dart';
+import 'package:lms/features/user_management/domain/use_cases/update_user.dart';
 import 'package:lms/features/user_management/domain/use_cases/update_user_profile.dart';
+import 'package:lms/features/user_management/presentation/pages/add_user_form.dart';
 import 'package:lms/features/user_management/presentation/pages/user_management_page.dart';
 import 'package:lms/features/user_management/presentation/pages/user_profile_page.dart';
+import 'package:lms/features/user_management/presentation/widgets/user_form.dart';
+
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -135,6 +141,7 @@ class AppRouter {
           path: kGroupList,
           builder: (context, state) => GroupListPage(),
         ),
+
         GoRoute(
           path: '${AppRouter.kUserProfile}/:username',
           builder: (context, state) {
@@ -237,6 +244,15 @@ class AppRouter {
             return UsersView(authority: authority);
           },
         ),
+        GoRoute(
+          path: kAddUsers,
+          builder: (context, state) {
+            final addUser = Provider.of<AddUser>(context);
+            return AddUsersForm(
+              addUsersUseCase: addUser,
+            );
+          },
+        ),
       ],
     );
   }
@@ -263,6 +279,8 @@ class AppRouter {
   static const kGroupList = '/group_list_page';
   static const kGroupDetails = '/group_details';
   static const kUserProfile = '/user-profile';
+  static const kAddUsers = '/add-users';
+
   static Future<String?> _getUsernameFromSharedPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('username');

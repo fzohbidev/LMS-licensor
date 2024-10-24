@@ -14,41 +14,41 @@ class UserOptionsIcons extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.terminal, color: Colors.white),
-        ),
-        const SizedBox(
-          width: 7,
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.phone_android, color: Colors.white),
-        ),
-        const SizedBox(
-          width: 7,
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.notifications_none, color: Colors.white),
-        ),
-        const SizedBox(
-          width: 7,
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.settings, color: Colors.white),
-        ),
-        const SizedBox(
-          width: 7,
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.question_mark_outlined,
-            color: Colors.white,
-          ),
-        ),
+        // IconButton(
+        //   onPressed: () {},
+        //   icon: const Icon(Icons.terminal, color: Colors.white),
+        // ),
+        // const SizedBox(
+        //   width: 7,
+        // ),
+        // IconButton(
+        //   onPressed: () {},
+        //   icon: const Icon(Icons.phone_android, color: Colors.white),
+        // ),
+        // const SizedBox(
+        //   width: 7,
+        // ),
+        // IconButton(
+        //   onPressed: () {},
+        //   icon: const Icon(Icons.notifications_none, color: Colors.white),
+        // ),
+        // const SizedBox(
+        //   width: 7,
+        // ),
+        // IconButton(
+        //   onPressed: () {},
+        //   icon: const Icon(Icons.settings, color: Colors.white),
+        // ),
+        // const SizedBox(
+        //   width: 7,
+        // ),
+        // IconButton(
+        //   onPressed: () {},
+        //   icon: const Icon(
+        //     Icons.question_mark_outlined,
+        //     color: Colors.white,
+        //   ),
+        // ),
         UserNameIcon(
           username: username, // Pass the username here
         ),

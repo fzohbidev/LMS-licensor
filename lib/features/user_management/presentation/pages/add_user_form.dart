@@ -1,65 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:lms/core/functions/show_snack_bar.dart';
 import 'package:lms/features/user_management/data/models/user_model.dart';
+import 'package:lms/features/user_management/domain/use_cases/add_user.dart';
+import 'package:lms/core/functions/show_snack_bar.dart';
+import 'package:email_validator/email_validator.dart'; // If you haven't added it yet, add this package to validate emails.
 
-class UserForm extends StatefulWidget {
-  final List<UserModel> users;
-  final bool isEditing;
-  final Function(List<UserModel>) onSubmit;
+class AddUsersForm extends StatefulWidget {
+  final AddUser addUsersUseCase; // Inject the use case
 
-  UserForm(
-      {required this.users, required this.isEditing, required this.onSubmit});
+  AddUsersForm({required this.addUsersUseCase});
 
   @override
-  _UserFormState createState() => _UserFormState();
+  _AddUsersFormState createState() => _AddUsersFormState();
 }
 
-class _UserFormState extends State<UserForm> {
+class _AddUsersFormState extends State<AddUsersForm> {
   final _formKey = GlobalKey<FormState>();
   List<UserModel> _users = [];
 
   @override
   void initState() {
     super.initState();
-    _users = widget.users;
-
-    if (!widget.isEditing) {
-      _users.add(UserModel(
-        id: 0,
-        username: '',
-        password: '',
-        email: '',
-        firstname: '',
-        lastname: '',
-        phone: '',
-        enabled: true,
-        authorities: [],
-        groups: [],
-      ));
-    }
+    _users.add(UserModel(
+      id: 0,
+      username: '',
+      password: '',
+      email: '',
+      firstname: '',
+      lastname: '',
+      phone: '',
+      enabled: true,
+      authorities: [],
+      groups: [],
+    ));
   }
 
-  void _submitForm() {
+  // Adjust the _submitForm method to use the use case
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      try {
+        // Call the addUsers use case
+        String result = await widget.addUsersUseCase.call(_users);
 
-      final usernames = _users.map((user) => user.username).toSet();
-      final emails = _users.map((user) => user.email).toSet();
-
-      if (usernames.length != _users.length) {
-        showSnackBar(
-            context, 'Duplicate usernames are not allowed', Colors.red);
-        return;
+        // Show the result in a snack bar
+        showSnackBar(context, result,
+            result.contains('successfully') ? Colors.green : Colors.red);
+      } catch (e) {
+        showSnackBar(context, "Failed to add users: $e", Colors.red);
       }
-
-      if (emails.length != _users.length) {
-        showSnackBar(context, 'Duplicate emails are not allowed', Colors.red);
-        return;
-      }
-
-      widget.onSubmit(_users);
-      Navigator.of(context).pop();
     }
   }
 
@@ -80,18 +68,12 @@ class _UserFormState extends State<UserForm> {
     });
   }
 
-  void _removeUser(int index) {
-    setState(() {
-      _users.removeAt(index);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isEditing ? 'Edit Users' : 'Add Multiple Users'),
         backgroundColor: Color(0xFF017278), // LMS color
+        title: Text('Add Users', style: TextStyle(color: Colors.white)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -100,12 +82,7 @@ class _UserFormState extends State<UserForm> {
           child: ListView.builder(
             itemCount: _users.length,
             itemBuilder: (context, index) {
-              return Column(
-                children: [
-                  _buildUserForm(index),
-                  SizedBox(height: 16.0), // Space between user forms
-                ],
-              );
+              return _buildUserForm(index);
             },
           ),
         ),
@@ -114,16 +91,16 @@ class _UserFormState extends State<UserForm> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
+            backgroundColor: Color(0xFF017278), // LMS color
             onPressed: _addUser,
             child: Icon(Icons.add),
-            backgroundColor: Color(0xFF017278), // LMS color
             tooltip: 'Add Another User',
           ),
           SizedBox(height: 10),
           FloatingActionButton(
+            backgroundColor: Color(0xFF017278), // LMS color
             onPressed: _submitForm,
             child: Icon(Icons.save),
-            backgroundColor: Color(0xFF017278), // LMS color
             tooltip: 'Submit Users',
           ),
         ],
@@ -134,17 +111,14 @@ class _UserFormState extends State<UserForm> {
   Widget _buildUserForm(int index) {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8.0),
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildTextField(
+            _buildInputField(
               label: 'Username',
               initialValue: _users[index].username,
+              onSaved: (value) => _users[index].username = value!,
               validator: (value) {
                 if (value!.isEmpty) return 'Please enter a username';
                 if (_users.where((user) => user.username == value).length > 1) {
@@ -152,68 +126,62 @@ class _UserFormState extends State<UserForm> {
                 }
                 return null;
               },
-              onSaved: (value) => _users[index].username = value!,
             ),
-            SizedBox(height: 12.0), // Space between form fields
-            _buildTextField(
+            _buildInputField(
               label: 'Password',
               initialValue: _users[index].password,
               obscureText: true,
+              onSaved: (value) => _users[index].password = value!,
               validator: (value) {
                 if (value!.isEmpty) return 'Please enter a password';
                 return null;
               },
-              onSaved: (value) => _users[index].password = value!,
             ),
-            SizedBox(height: 12.0), // Space between form fields
-            _buildTextField(
+            _buildInputField(
               label: 'Email',
               initialValue: _users[index].email,
+              onSaved: (value) => _users[index].email = value!,
               validator: (value) {
                 if (value!.isEmpty) return 'Please enter an email';
-                if (!EmailValidator.validate(value))
+                if (!EmailValidator.validate(value)) {
                   return 'Invalid email format';
+                }
                 if (_users.where((user) => user.email == value).length > 1) {
                   return 'Email already exists';
                 }
                 return null;
               },
-              onSaved: (value) => _users[index].email = value!,
             ),
-            SizedBox(height: 12.0), // Space between form fields
-            _buildTextField(
+            _buildInputField(
               label: 'First Name',
               initialValue: _users[index].firstname,
+              onSaved: (value) => _users[index].firstname = value!,
               validator: (value) {
                 if (value!.isEmpty) return 'Please enter a first name';
                 return null;
               },
-              onSaved: (value) => _users[index].firstname = value!,
             ),
-            SizedBox(height: 12.0), // Space between form fields
-            _buildTextField(
+            _buildInputField(
               label: 'Last Name',
               initialValue: _users[index].lastname,
+              onSaved: (value) => _users[index].lastname = value!,
               validator: (value) {
                 if (value!.isEmpty) return 'Please enter a last name';
                 return null;
               },
-              onSaved: (value) => _users[index].lastname = value!,
             ),
-            SizedBox(height: 12.0), // Space between form fields
-            _buildTextField(
+            _buildInputField(
               label: 'Phone',
               initialValue: _users[index].phone,
+              onSaved: (value) => _users[index].phone = value!,
               validator: (value) {
                 if (value!.isEmpty) return 'Please enter a phone number';
                 return null;
               },
-              onSaved: (value) => _users[index].phone = value!,
             ),
-            SizedBox(height: 12.0), // Space between form fields
             SwitchListTile(
-              title: Text('Enabled'),
               activeColor: Color(0xFF017278), // LMS color
+              title: Text('Enabled'),
               value: _users[index].enabled,
               onChanged: (value) {
                 setState(() {
@@ -221,46 +189,35 @@ class _UserFormState extends State<UserForm> {
                 });
               },
             ),
-            SizedBox(height: 12.0), // Space between Switch and delete button
-            Align(
-              alignment: Alignment.centerRight,
-              child: IconButton(
-                icon: Icon(Icons.delete, color: Colors.red),
-                onPressed: () {
-                  if (_users.length > 1) {
-                    _removeUser(index);
-                  } else {
-                    showSnackBar(
-                        context, 'At least one user is required', Colors.red);
-                  }
-                },
-                tooltip: 'Remove User',
-              ),
-            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextField({
+  Widget _buildInputField({
     required String label,
-    required String? initialValue,
-    required FormFieldValidator<String>? validator,
-    required FormFieldSetter<String>? onSaved,
+    required String initialValue,
+    required Function(String?) onSaved,
+    required String? Function(String?) validator,
     bool obscureText = false,
   }) {
-    return TextFormField(
-      initialValue: initialValue,
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-        filled: true,
-        fillColor: Colors.grey[100],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        initialValue: initialValue,
+        obscureText: obscureText,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: Color(0xFF017278)), // LMS color
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF017278)), // LMS color
+          ),
+          border: OutlineInputBorder(),
+        ),
+        validator: validator,
+        onSaved: onSaved,
       ),
-      validator: validator,
-      onSaved: onSaved,
     );
   }
 }
