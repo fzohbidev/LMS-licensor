@@ -49,8 +49,9 @@ class _HomeViewBodyState extends State<HomeViewBody>
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const CustomExpandedDrawer(),
+        const Expanded(child: CustomExpandedDrawer()),
         Expanded(
+          flex: 4,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: SingleChildScrollView(

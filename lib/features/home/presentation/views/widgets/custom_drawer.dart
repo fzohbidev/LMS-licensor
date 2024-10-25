@@ -3,16 +3,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms/core/utils/app_router.dart';
 import 'package:lms/core/utils/assets.dart';
+import 'package:lms/core/widgets/build_list_tile.dart';
 import 'package:lms/features/auth/presentation/manager/sign_in_cubit/sign_in_cubit.dart';
 import 'package:lms/features/auth/presentation/manager/user_state.dart';
 import 'package:provider/provider.dart';
 
 class CustomExpandedDrawer extends StatefulWidget {
-  //final VoidCallback closeDrawer;
-
-  const CustomExpandedDrawer({
-    super.key,
-  });
+  const CustomExpandedDrawer({super.key});
 
   @override
   State<CustomExpandedDrawer> createState() => _CustomExpandedDrawerState();
@@ -21,167 +18,109 @@ class CustomExpandedDrawer extends StatefulWidget {
 class _CustomExpandedDrawerState extends State<CustomExpandedDrawer> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserState>(builder: (context, userState, child) {
-      return SizedBox(
-        width: 250,
-        child: Column(
+    return Consumer<UserState>(
+      builder: (context, userState, child) {
+        return Column(
           children: [
+            const SizedBox(
+              height: 30,
+            ),
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  ListTile(
-                    title: const Row(
-                      children: [
-                        Icon(Icons.home_outlined),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text('Home'),
-                      ],
-                    ),
+                  buildListTile(
+                    context: context,
+                    icon: Icons.home_outlined,
+                    title: 'Home',
                     onTap: () {
                       // Navigate to Home
                     },
                   ),
-                  userRole.contains('ROLE_ADMIN')
-                      ? ExpansionTile(
-                          title: const Row(
-                            children: [
-                              Icon(Icons.person_outline_sharp),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text('Users'),
-                            ],
-                          ),
-                          children: <Widget>[
-                            ListTile(
-                              title: const Text('Manage Users'),
-                              onTap: () {
-                                GoRouter.of(context)
-                                    .push(AppRouter.kUserManagement);
-                              },
-                            ),
-                          ],
-                        )
-                      : Container(),
-                  ExpansionTile(
-                    title: const Row(
+                  if (userRole.contains('ROLE_ADMIN'))
+                    buildExpansionTile(
+                      context: context,
+                      icon: Icons.person_outline_sharp,
+                      title: 'Users',
                       children: [
-                        Icon(Icons.groups_outlined),
-                        SizedBox(
-                          width: 5,
+                        buildListTile(
+                          context: context,
+                          icon: Icons.manage_accounts,
+                          title: 'Manage Users',
+                          onTap: () {
+                            GoRouter.of(context)
+                                .push(AppRouter.kUserManagement);
+                          },
                         ),
-                        Text('Teams & Groups'),
                       ],
                     ),
-                    children: <Widget>[
-                      ListTile(
-                        title: const Text('Show Groups'),
+                  buildExpansionTile(
+                    context: context,
+                    icon: Icons.groups_outlined,
+                    title: 'Teams & Groups',
+                    children: [
+                      buildListTile(
+                        context: context,
+                        icon: Icons.group,
+                        title: 'Show Groups',
                         onTap: () {
                           GoRouter.of(context).push(AppRouter.kTeamManagement);
                         },
                       ),
                     ],
                   ),
-                  ExpansionTile(
-                    title: const Row(
-                      children: [
-                        Icon(FontAwesomeIcons.moneyBill),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text('Billing'),
-                      ],
-                    ),
-                    children: <Widget>[
-                      ListTile(
-                        title: const Icon(FontAwesomeIcons.solidCreditCard),
+                  buildExpansionTile(
+                    context: context,
+                    icon: FontAwesomeIcons.moneyBill,
+                    title: 'Billing',
+                    children: [
+                      buildListTile(
+                        context: context,
+                        icon: FontAwesomeIcons.solidCreditCard,
+                        title: 'View Payments',
                         onTap: () {
                           GoRouter.of(context).push(AppRouter.kPaymentView);
                         },
                       ),
                     ],
                   ),
-                  // ListTile(
-                  //   title: Row(
-                  //     children: [
-                  //       Image.asset(
-                  //         AssetsData.copilotIcon,
-                  //         height: 30,
-                  //         width: 30,
-                  //       ),
-                  //       const SizedBox(
-                  //         width: 5,
-                  //       ),
-                  //       const Text('Copilot'),
-                  //     ],
-                  //   ),
-                  //   onTap: () {
-                  //     // Navigate to Copilot
-                  //   },
-                  // ),
-                  userRole.contains('ROLE_ADMIN')
-                      ? ListTile(
-                          title: Row(
-                            children: [
-                              Image.asset(
-                                AssetsData.rolesIcon,
-                                height: 30,
-                                width: 30,
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              const Text('Roles and permissions'),
-                            ],
-                          ),
-                          onTap: () {
-                            GoRouter.of(context)
-                                .push(AppRouter.kRolesAndPermissionView);
-                          },
-                        )
-                      : Container(),
+                  if (userRole.contains('ROLE_ADMIN'))
+                    buildListTile(
+                      context: context,
+                      icon: Icons.verified_user,
+                      title: 'Roles and permissions',
+                      onTap: () {
+                        GoRouter.of(context)
+                            .push(AppRouter.kRolesAndPermissionView);
+                      },
+                    ),
                   if (userState.isLicensor)
-                    ListTile(
-                      title: Row(
-                        children: [
-                          Image.asset(
-                            'assets/images/poroduct_mngmt.png',
-                            height: 30,
-                            width: 30,
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          const Text('Product Management'),
-                        ],
-                      ),
+                    buildListTile(
+                      context: context,
+                      icon: Icons.settings,
+                      title: 'Product Management',
                       onTap: () {
                         GoRouter.of(context).push(AppRouter.kProductManagement);
                       },
                     ),
                   if (!userState.isLicensor)
-                    ExpansionTile(
-                      title: const Row(
-                        children: [
-                          Icon(Icons.add_shopping_cart_sharp),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text('Product'),
-                        ],
-                      ),
-                      children: <Widget>[
-                        ListTile(
-                          title: const Text('Purchase Product'),
+                    buildExpansionTile(
+                      context: context,
+                      icon: Icons.add_shopping_cart_sharp,
+                      title: 'Product',
+                      children: [
+                        buildListTile(
+                          context: context,
+                          icon: Icons.shopping_cart,
+                          title: 'Purchase Product',
                           onTap: () {
                             GoRouter.of(context).push(AppRouter.kProductList);
                           },
                         ),
-                        ListTile(
-                          title: const Text('Manage Purchased Products'),
+                        buildListTile(
+                          context: context,
+                          icon: Icons.manage_accounts,
+                          title: 'Manage Purchased Products',
                           onTap: () {
                             GoRouter.of(context)
                                 .push(AppRouter.kLicenseRenewalView);
@@ -190,73 +129,38 @@ class _CustomExpandedDrawerState extends State<CustomExpandedDrawer> {
                       ],
                     ),
                   if (userState.isLicensor)
-                    ListTile(
-                      title: const Row(
-                        children: [
-                          Icon(Icons.generating_tokens_sharp),
-                          Text('Generate Auth Code'),
-                          SizedBox(
-                            width: 5,
-                          ),
-                        ],
-                      ),
+                    buildListTile(
+                      context: context,
+                      icon: Icons.generating_tokens_sharp,
+                      title: 'Generate Auth Code',
                       onTap: () {
                         GoRouter.of(context)
                             .push(AppRouter.kLicensorAuthGenerator);
                       },
                     ),
                   if (userState.isLicensor)
-                    ListTile(
-                      title: const Row(
-                        children: [
-                          Icon(Icons.token_outlined),
-                          Text('Authorization Codes'),
-                          SizedBox(
-                            width: 5,
-                          ),
-                        ],
-                      ),
+                    buildListTile(
+                      context: context,
+                      icon: Icons.token_outlined,
+                      title: 'Authorization Codes',
                       onTap: () {
                         GoRouter.of(context)
                             .push(AppRouter.kLicensorListAuthCodes);
                       },
                     ),
-                  // ListTile(
-                  //   title: const Row(
-                  //     children: [
-                  //       Icon(Icons.work_outline),
-                  //       Text('Market place')
-                  //     ],
-                  //   ),
-                  //   onTap: () {
-                  //     GoRouter.of(context).push(AppRouter.kLicenseRenewalView);
-                  //   },
-                  // ),
-                  ListTile(
-                    title: const Row(
-                      children: [
-                        Icon(FontAwesomeIcons.wrench),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text('Setup'),
-                      ],
-                    ),
+                  buildListTile(
+                    context: context,
+                    icon: FontAwesomeIcons.wrench,
+                    title: 'Setup',
                     onTap: () {
                       // Navigate to Setup
                     },
                   ),
                   const Divider(),
-                  ListTile(
-                    title: const Row(
-                      children: [
-                        Icon(FontAwesomeIcons.ellipsis),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text('Show all items'),
-                      ],
-                    ),
+                  buildListTile(
+                    context: context,
+                    icon: FontAwesomeIcons.ellipsis,
+                    title: 'Show all items',
                     onTap: () {
                       // Show all items
                     },
@@ -265,9 +169,9 @@ class _CustomExpandedDrawerState extends State<CustomExpandedDrawer> {
               ),
             ),
           ],
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }
 
@@ -284,161 +188,148 @@ class _CustomCollapsedDrawerState extends State<CustomCollapsedDrawer> {
   @override
   Widget build(BuildContext context) {
     return Consumer<UserState>(builder: (context, userState, child) {
-      return SizedBox(
-        width: 120, // Increased the width for better layout
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  ListTile(
-                    title: const Icon(Icons.home_outlined),
-                    onTap: () {},
-                  ),
-                  userRole.contains('ROLE_ADMIN')
-                      ? ListTile(
-                          title: const Icon(Icons.person_outline_sharp),
-                          onTap: () {
-                            GoRouter.of(context)
-                                .push(AppRouter.kUserManagement);
-                          },
-                        )
-                      : Container(),
-                  //NEED TO CHANGE ENDPOINTS FOR LICENSOR USERS
-                  if (userState.isLicensor)
-                    ListTile(
-                      title: const Icon(Icons.person_outline_sharp),
-                      onTap: () {
-                        GoRouter.of(context).push(AppRouter.kUserManagement);
-                      },
-                    ),
-
-                  ListTile(
-                    title: const Icon(Icons.groups_outlined),
+      return Column(
+        children: [
+          const SizedBox(
+            height: 30,
+          ),
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                buildListTile(
+                  context: context,
+                  icon: Icons.home_outlined,
+                  onTap: () {},
+                ),
+                userRole.contains('ROLE_ADMIN')
+                    ? buildListTile(
+                        context: context,
+                        icon: Icons.person_outline_sharp,
+                        onTap: () {
+                          GoRouter.of(context).push(AppRouter.kUserManagement);
+                        },
+                      )
+                    : const SizedBox(),
+                //NEED TO CHANGE ENDPOINTS FOR LICENSOR USERS
+                if (userState.isLicensor)
+                  buildListTile(
+                    context: context,
+                    icon: Icons.person_outline_sharp,
                     onTap: () {
-                      GoRouter.of(context).push(AppRouter.kTeamManagement);
+                      GoRouter.of(context).push(AppRouter.kUserManagement);
                     },
                   ),
 
-                  userRole.contains('ROLE_ADMIN')
-                      ? ExpansionTile(
-                          title: const Row(
-                            children: [
-                              Icon(FontAwesomeIcons.moneyBill),
-                            ],
-                          ),
-                          children: <Widget>[
-                            ListTile(
-                              title:
-                                  const Icon(FontAwesomeIcons.solidCreditCard),
-                              onTap: () {
-                                GoRouter.of(context)
-                                    .push(AppRouter.kPaymentView);
-                              },
-                            ),
-                          ],
-                        )
-                      : Container(),
+                buildListTile(
+                  context: context,
+                  icon: Icons.groups_outlined,
+                  onTap: () {
+                    GoRouter.of(context).push(AppRouter.kTeamManagement);
+                  },
+                ),
 
-                  userRole.contains('ROLE_ADMIN')
-                      ? ListTile(
-                          title: Image.asset(
-                            AssetsData.rolesIcon,
-                            height: 30,
-                            width: 30,
-                          ),
-                          onTap: () {
-                            GoRouter.of(context)
-                                .push(AppRouter.kRolesAndPermissionView);
-                          },
-                        )
-                      : Container(),
-                  if (userState.isLicensor)
-                    ListTile(
-                      title: Image.asset(
-                        'assets/images/poroduct_mngmt.png',
-                        height: 30,
-                        width: 30,
-                      ),
-                      onTap: () {
-                        GoRouter.of(context).push(AppRouter.kProductManagement);
-                      },
-                    ),
-                  if (userState.isLicensor)
-                    ListTile(
-                      title: const Row(
-                        children: [
-                          Icon(Icons.generating_tokens_sharp),
-                          SizedBox(
-                            width: 5,
+                userRole.contains('ROLE_ADMIN')
+                    ? buildExpansionTile(
+                        context: context,
+                        icon: FontAwesomeIcons.moneyBill,
+                        children: <Widget>[
+                          buildListTile(
+                            context: context,
+                            icon: FontAwesomeIcons.solidCreditCard,
+                            onTap: () {
+                              GoRouter.of(context).push(AppRouter.kPaymentView);
+                            },
                           ),
                         ],
-                      ),
-                      onTap: () {
-                        GoRouter.of(context)
-                            .push(AppRouter.kLicensorAuthGenerator);
-                      },
-                    ),
-                  if (userState.isLicensor)
-                    ListTile(
-                      title: const Row(
-                        children: [
-                          Icon(Icons.token_outlined),
-                          SizedBox(
-                            width: 5,
-                          ),
-                        ],
-                      ),
-                      onTap: () {
-                        GoRouter.of(context)
-                            .push(AppRouter.kLicensorListAuthCodes);
-                      },
-                    ),
-                  // Ensure that userRole.contains is not null and valid
-                  if (!userState.isLicensor)
-                    ExpansionTile(
-                      title: const Icon(Icons.add_shopping_cart_sharp),
-                      children: <Widget>[
-                        ListTile(
-                          title: const Icon(FontAwesomeIcons.creditCard),
-                          onTap: () {
-                            GoRouter.of(context).push(AppRouter.kProductList);
-                          },
+                      )
+                    : const SizedBox(),
+
+                userRole.contains('ROLE_ADMIN')
+                    ? ListTile(
+                        title: Image.asset(
+                          AssetsData.rolesIcon,
+                          height: 30,
+                          width: 30,
                         ),
-                        ListTile(
-                          title: const Icon(Icons.work_outline),
-                          onTap: () {
-                            GoRouter.of(context)
-                                .push(AppRouter.kLicenseRenewalView);
-                          },
-                        ),
-                      ],
-                    ),
-                  // ListTile(
-                  //   title: const Icon(Icons.work_outline),
-                  //   onTap: () {
-                  //     GoRouter.of(context).push(AppRouter.kLicenseRenewalView);
-                  //   },
-                  // ),
+                        onTap: () {
+                          GoRouter.of(context)
+                              .push(AppRouter.kRolesAndPermissionView);
+                        },
+                      )
+                    : const SizedBox(),
+                if (userState.isLicensor)
                   ListTile(
-                    title: const Icon(FontAwesomeIcons.wrench),
+                    title: Image.asset(
+                      'assets/images/poroduct_mngmt.png',
+                      height: 30,
+                      width: 30,
+                    ),
                     onTap: () {
-                      // Navigate to Copilot
+                      GoRouter.of(context).push(AppRouter.kProductManagement);
                     },
                   ),
-                  const Divider(),
-                  ListTile(
-                    title: const Icon(FontAwesomeIcons.ellipsis),
+                if (userState.isLicensor)
+                  buildListTile(
+                    context: context,
+                    icon: Icons.generating_tokens_sharp,
                     onTap: () {
-                      // Show all items
+                      GoRouter.of(context)
+                          .push(AppRouter.kLicensorAuthGenerator);
                     },
                   ),
-                ],
-              ),
+                if (userState.isLicensor)
+                  buildListTile(
+                    context: context,
+                    icon: Icons.token_outlined,
+                    onTap: () {
+                      GoRouter.of(context)
+                          .push(AppRouter.kLicensorListAuthCodes);
+                    },
+                  ),
+                // Ensure that userRole.contains is not null and valid
+                if (!userState.isLicensor)
+                  buildExpansionTile(
+                    context: context,
+                    icon: Icons.add_shopping_cart_sharp,
+                    children: <Widget>[
+                      buildListTile(
+                        context: context,
+                        icon: FontAwesomeIcons.creditCard,
+                        onTap: () {
+                          GoRouter.of(context).push(AppRouter.kProductList);
+                        },
+                      ),
+                      buildListTile(
+                        context: context,
+                        icon: Icons.work_outline,
+                        onTap: () {
+                          GoRouter.of(context)
+                              .push(AppRouter.kLicenseRenewalView);
+                        },
+                      ),
+                    ],
+                  ),
+
+                buildListTile(
+                  context: context,
+                  icon: FontAwesomeIcons.wrench,
+                  onTap: () {
+                    // Navigate to Copilot
+                  },
+                ),
+                const Divider(),
+                buildListTile(
+                  context: context,
+                  icon: FontAwesomeIcons.ellipsis,
+                  onTap: () {
+                    // Show all items
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       );
     });
   }
