@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lms/constants.dart';
 import 'package:lms/core/functions/show_snack_bar.dart';
 import 'package:lms/core/utils/app_router.dart';
+import 'package:lms/core/widgets/build_text_field.dart';
 import 'package:lms/features/auth/presentation/manager/sign_in_cubit/sign_in_cubit.dart';
 
 class SignInForm extends StatefulWidget {
@@ -38,38 +40,14 @@ class _SignInFormState extends State<SignInForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextFormField(
-              controller: widget.usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Username or Email',
-                border: OutlineInputBorder(),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your username';
-                }
-                return null;
-              },
-            ),
+            buildAuthTextField(
+                controller: widget.usernameController,
+                label: 'Username or Email'),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: widget.passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your password';
-                }
-                return null;
-              },
-              obscureText: true,
-            ),
+            buildAuthTextField(
+                controller: widget.passwordController,
+                label: 'Password',
+                obscureText: true),
             const SizedBox(height: 16),
             const SignInAlternative(),
             TextButton(
@@ -82,7 +60,7 @@ class _SignInFormState extends State<SignInForm> {
               ),
               child: const Text(
                 "Forgot Password?",
-                style: TextStyle(color: Colors.blue),
+                style: TextStyle(color: kPrimaryColor),
               ),
             ),
             const SizedBox(height: 10),
@@ -104,7 +82,7 @@ class _SignInFormState extends State<SignInForm> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
+                          //  backgroundColor: Colors.blue,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
                         child: state is SignInLoading
@@ -153,7 +131,10 @@ class SignInAlternative extends StatelessWidget {
           onPressed: () {
             GoRouter.of(context).push(AppRouter.kRegister);
           },
-          child: const Text("Register", style: TextStyle(color: Colors.blue)),
+          child: const Text(
+            "Register",
+            style: TextStyle(color: kPrimaryColor),
+          ),
         ),
       ],
     );

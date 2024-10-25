@@ -138,6 +138,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lms/constants.dart';
 import 'package:lms/core/functions/set_up_service_locator.dart';
 import 'package:lms/core/simple_bloc_observer.dart';
 import 'package:lms/core/utils/api.dart';
@@ -334,6 +335,23 @@ class MyApp extends StatelessWidget {
             iconTheme: const IconThemeData(color: Colors.black),
             hintColor: Colors.black,
             colorScheme: const ColorScheme.light(),
+            radioTheme: const RadioThemeData(
+              fillColor: WidgetStatePropertyAll(kPrimaryColor),
+            ),
+            elevatedButtonTheme: const ElevatedButtonThemeData(
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(kPrimaryColor),
+              ),
+            ),
+            inputDecorationTheme: const InputDecorationTheme(
+              labelStyle: TextStyle(color: kPrimaryColor),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: kPrimaryColor),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: kPrimaryColor),
+              ),
+            ),
           ),
         ),
       ),

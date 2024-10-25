@@ -7,7 +7,7 @@ import 'package:lms/features/auth/data/data_sources/auth_remote_data_source.dart
 import 'package:lms/features/auth/data/repositories/auth_repositroy_impl.dart';
 import 'package:lms/features/auth/domain/use_case/register_use_case.dart';
 import 'package:lms/features/auth/presentation/manager/registration_cubit/registration_cubit.dart';
-import 'package:lms/features/auth/presentation/views/widgets/register_form.dart';
+import 'package:lms/features/auth/presentation/views/widgets/desktop_register_form.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
