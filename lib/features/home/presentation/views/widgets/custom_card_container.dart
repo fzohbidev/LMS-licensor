@@ -18,31 +18,32 @@ class CustomContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 400,
-      height: 140,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(4)),
-        border: Border(
-          top: BorderSide(color: Colors.grey, width: 2),
-          right: BorderSide(color: Colors.grey, width: 2),
-          bottom: BorderSide(color: Colors.grey, width: 2),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const ColoredOuterLine(),
-          const ColoredInnerLine(),
-          Expanded(
-            child: insideCardContainer(
-              icon: icon,
-              iconPath: iconPath,
-              cardTitle: cardTitle,
-              cardText: cardText,
-            ),
+    return Expanded(
+      child: Container(
+        height: 140,
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          border: Border(
+            top: BorderSide(color: Colors.grey, width: 2),
+            right: BorderSide(color: Colors.grey, width: 2),
+            bottom: BorderSide(color: Colors.grey, width: 2),
           ),
-        ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const ColoredOuterLine(),
+            const ColoredInnerLine(),
+            Expanded(
+              child: insideCardContainer(
+                icon: icon,
+                iconPath: iconPath,
+                cardTitle: cardTitle,
+                cardText: cardText,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -22,7 +22,9 @@ class CustomAppBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const AppBarGridIconAndTitle(),
-          const ResponsiveTextField(),
+          const Expanded(child: SizedBox()),
+          const Expanded(flex: 3, child: ResponsiveTextField()),
+          const Expanded(flex: 2, child: SizedBox()),
           UserOptionsIcons(
             username: username, // Pass the username here
           ),

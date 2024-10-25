@@ -8,22 +8,18 @@ class ResponsiveTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            // width of the search field
-            double searchFieldWidth = constraints.maxWidth * 0.5;
-            return Center(
-              child: SizedBox(
-                width: searchFieldWidth,
-                height: 40,
-                child: const CustomSearchTextField(),
-              ),
-            );
-          },
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // width of the search field
+          double searchFieldWidth = constraints.maxWidth * 0.2;
+          return SizedBox(
+            width: searchFieldWidth,
+            height: 40,
+            child: const CustomSearchTextField(),
+          );
+        },
       ),
     );
   }
