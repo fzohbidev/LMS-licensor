@@ -15,11 +15,11 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xffdce1e3),
       body: AdaptiveLayout(
         mobileLayout: (context) => const SizedBox(),
         tabletLayout: (context) => const SizedBox(),
-        desktopLayout: (context) => const DesktopLayout(),
+        desktopLayout: (context) => const LoginDesktopLayout(),
       ),
     );
   }
