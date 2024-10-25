@@ -344,12 +344,12 @@ class MyApp extends StatelessWidget {
               ),
             ),
             inputDecorationTheme: const InputDecorationTheme(
-              labelStyle: TextStyle(color: kPrimaryColor),
+              labelStyle: TextStyle(color: Colors.black),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: kPrimaryColor),
+                borderSide: BorderSide(color: Colors.black),
               ),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: kPrimaryColor),
+                borderSide: BorderSide(color: Colors.black),
               ),
             ),
           ),
