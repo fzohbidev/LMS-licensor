@@ -27,47 +27,76 @@ class _ProductListPageState extends State<ProductListPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Products'),
-      ),
-      body:
-          BlocConsumer<ProductCubit, ProductState>(listener: (context, state) {
-        if (state is GetAllProductsFailureState) {
-          showSnackBar(context, state.errorMsg, Colors.red);
-        } else if (state is GetAllProductsSuccessState) {
-          products = state.products;
-        }
-      }, builder: (context, state) {
-        return Column(
-          children: [
-            // Show Cart Button Section
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CartPage(),
+        actions: [
+          // Show Cart Icon aligned to the right
+          Padding(
+            padding: const EdgeInsets.only(right: 40.0),
+            child: Stack(
+              children: [
+                IconButton(
+                  iconSize: 28,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CartPage(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.add_shopping_cart),
+                ),
+                // Display the badge with the cart item count
+                if (cartProvider.cartItems.isNotEmpty)
+                  Positioned(
+                    right: 0,
+                    top: 6,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '${cartProvider.cartItems.length}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                      ),
                     ),
-                  );
-                },
-                child: const Text('Show Cart'),
-              ),
+                  ),
+              ],
             ),
-            // Product List Section
-            Expanded(
-              child: ListView.builder(
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  final product = products[index];
-                  return ProductCard(
-                    product: product,
-                  );
-                },
+          ),
+        ],
+      ),
+      body: BlocConsumer<ProductCubit, ProductState>(
+        listener: (context, state) {
+          if (state is GetAllProductsFailureState) {
+            showSnackBar(context, state.errorMsg, Colors.red);
+          } else if (state is GetAllProductsSuccessState) {
+            products = state.products;
+          }
+        },
+        builder: (context, state) {
+          return Column(
+            children: [
+              // Product List Section
+              Expanded(
+                child: ListView.builder(
+                  itemCount: products.length,
+                  itemBuilder: (context, index) {
+                    final product = products[index];
+                    return ProductCard(
+                      product: product,
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
-        );
-      }),
+            ],
+          );
+        },
+      ),
     );
   }
 }

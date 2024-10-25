@@ -9,7 +9,6 @@ class DesktopRegisterForm extends StatefulWidget {
   const DesktopRegisterForm({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _RegisterFormState createState() => _RegisterFormState();
 }
 
@@ -22,8 +21,12 @@ class _RegisterFormState extends State<DesktopRegisterForm> {
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   bool? isLicensor = false;
+
   @override
   Widget build(BuildContext context) {
+    // Define LMS theme color
+    const lmsPrimaryColor = Color(0xFF017278);
+
     return BlocListener<RegistrationCubit, RegistrationState>(
       listener: (context, state) {
         if (state is RegistrationSuccess) {
@@ -222,6 +225,34 @@ class _RegisterFormState extends State<DesktopRegisterForm> {
       ),
     );
   }
+
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String labelText,
+    required String? Function(String?) validator,
+    bool obscureText = false,
+    required Color lmsPrimaryColor,
+  }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        labelText: labelText,
+        labelStyle: TextStyle(color: lmsPrimaryColor),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: lmsPrimaryColor),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: lmsPrimaryColor.withOpacity(0.6)),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      ),
+      validator: validator,
+    );
+  }
 }
 
 class RegisterAlternative extends StatelessWidget {
@@ -239,7 +270,8 @@ class RegisterAlternative extends StatelessWidget {
           onPressed: () {
             GoRouter.of(context).push(AppRouter.kSignIn);
           },
-          child: const Text("Sign in", style: TextStyle(color: Colors.blue)),
+          child:
+              const Text("Sign in", style: TextStyle(color: Color(0xFF017278))),
         ),
       ],
     );

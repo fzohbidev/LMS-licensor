@@ -180,6 +180,7 @@ import 'package:lms/features/user_groups/data/repositories/group_repository.dart
 import 'package:lms/features/user_groups/domain/use_cases/get_groups.dart';
 import 'package:lms/features/user_groups/presentation/state/group_bloc.dart';
 import 'package:lms/features/user_management/data/data_sources/user_remote_data_source.dart';
+import 'package:lms/features/user_management/domain/use_cases/add_user.dart';
 import 'package:provider/provider.dart';
 
 import 'features/user_management/data/repositories/user_repository.dart';
@@ -299,6 +300,7 @@ class MyApp extends StatelessWidget {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => CartProvider()),
+
           ChangeNotifierProvider(
             create: (context) => UserState(),
           ),
@@ -311,6 +313,17 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<AuthorizationCodeViewModel>(
             create: (context) => AuthorizationCodeViewModel(
               Provider.of<AuthorizationCodeRepository>(context, listen: false),
+            ),
+          ),
+
+          // Provide the UserRepository and AddUser
+          Provider<UserRepositoryManagementImpl>(
+            create: (_) => UserRepositoryManagementImpl(
+                remoteDataSource: UserManagementRemoteDataSource(Api(Dio()))),
+          ),
+          ChangeNotifierProvider<AddUser>(
+            create: (context) => AddUser(
+              Provider.of<UserRepositoryManagementImpl>(context, listen: false),
             ),
           ),
         ],

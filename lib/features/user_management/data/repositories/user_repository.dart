@@ -9,10 +9,10 @@ class UserRepositoryManagementImpl implements UserRepository {
 
   UserRepositoryManagementImpl({required this.remoteDataSource});
 
-  @override
-  Future<void> addUser(UserModel user) async {
+  Future<String> addUser(UserModel user) async {
     try {
-      await remoteDataSource.addUsers(user.toJson() as List<UserModel>);
+      // Call addUsers with a list containing the single user
+      return await remoteDataSource.addUsers([user]); // Wrap user in a list
     } catch (error) {
       throw Exception('Error adding user: $error');
     }

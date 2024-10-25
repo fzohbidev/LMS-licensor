@@ -38,6 +38,7 @@ class UserManagementRemoteDataSource {
       );
       results.add("Users added successfully");
     } catch (e) {
+      print(e);
       results.add("Failed to add users: $e");
     }
 
@@ -69,7 +70,7 @@ class UserManagementRemoteDataSource {
   Future<String> removeUser(int userId) async {
     try {
       var response =
-          await api.delete2(endPoint: "/api/auth/delete/$userId", body: '');
+          await api.delete2(endPoint: "api/auth/delete/$userId", body: '');
 
       print("Response data: $response");
 

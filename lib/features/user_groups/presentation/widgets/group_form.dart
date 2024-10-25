@@ -23,7 +23,7 @@ class _GroupFormState extends State<GroupForm> {
   String _description = '';
   late List<UserModel> _availableUsers = [];
   late Set<int> _selectedUserIds;
-  late final List<int> _usersToRemove = []; // New list to track unchecked users
+  late final List<int> _usersToRemove = [];
 
   @override
   void initState() {
@@ -34,7 +34,6 @@ class _GroupFormState extends State<GroupForm> {
       _name = widget.group!.name;
       _description = widget.group!.description;
       widget.group!.users = widget.group?.users ?? [];
-      print('Loaded group users: ${widget.group?.users}');
     }
   }
 
@@ -42,20 +41,11 @@ class _GroupFormState extends State<GroupForm> {
     try {
       final groupService = GroupRepository(apiService: widget.api);
       _availableUsers = await groupService.fetchUsers();
-
-      // Debugging prints
-      print('Available users: $_availableUsers');
-      print('Group users: ${widget.group?.users}');
-
-      // Initialize _selectedUserIds based on the group ID
       _selectedUserIds = _availableUsers
           .where((user) =>
               user.groups.any((group) => group.id == widget.group?.id))
           .map((user) => user.id)
           .toSet();
-
-      print('Selected user IDs: $_selectedUserIds');
-
       setState(() {});
     } catch (e) {
       print('Error fetching users: $e');
@@ -66,111 +56,51 @@ class _GroupFormState extends State<GroupForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.group != null ? 'Edit Group' : 'Create Group'),
-        leading: const BackButton(),
+        backgroundColor: const Color(0xFF017278),
+        title: Text(
+          widget.group != null ? 'Edit Group' : 'Create Group',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        leading: BackButton(
+          color: Colors.white,
+          onPressed: () {
+            // Navigate back to the previous page
+            GoRouter.of(context).push(AppRouter.kGroupList);
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Group Name'),
+              _buildTextFormField(
+                label: 'Group Name',
                 initialValue: _name,
                 onSaved: (value) => _name = value ?? '',
               ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Description'),
+              const SizedBox(height: 16),
+              _buildTextFormField(
+                label: 'Description',
                 initialValue: _description,
                 onSaved: (value) => _description = value ?? '',
               ),
               const SizedBox(height: 20),
-              const Text('Assign Users',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                'Assign Users',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Color(0xFF017278)),
+              ),
+              const SizedBox(height: 10),
               Expanded(
-                child: ListView.builder(
-                  itemCount: _availableUsers.length,
-                  itemBuilder: (context, index) {
-                    final user = _availableUsers[index];
-                    final isChecked = _selectedUserIds.contains(user.id);
-                    return CheckboxListTile(
-                      title: Text('${user.firstname} ${user.lastname}'),
-                      value: isChecked,
-                      onChanged: (bool? selected) {
-                        setState(() {
-                          if (selected == true) {
-                            _selectedUserIds.add(user.id);
-                            _usersToRemove.remove(user
-                                .id); // Remove from removal list if rechecked
-                          } else {
-                            _selectedUserIds.remove(user.id);
-                            _usersToRemove.add(user.id); // Add to removal list
-                            print(
-                                'SELECTED USERS AFTER UNCHECKING: $_selectedUserIds');
-                          }
-                        });
-                      },
-                    );
-                  },
-                ),
+                child: _buildUserList(),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        _formKey.currentState!.save();
-                        GroupModel group = GroupModel(
-                          id: widget.group?.id ?? 0,
-                          name: _name,
-                          description: _description,
-                          users: _availableUsers
-                              .where(
-                                  (user) => _selectedUserIds.contains(user.id))
-                              .toList(),
-                        );
-
-                        try {
-                          final GroupRepository groupService =
-                              GroupRepository(apiService: widget.api);
-
-                          if (widget.group == null) {
-                            await groupService.createGroup(group);
-                            await groupService.assignUsersToGroup(
-                                group.id, _selectedUserIds.toList());
-                            showSnackBar(context, 'Group inserted successfully',
-                                Colors.green);
-                          } else {
-                            await groupService.updateGroup(group);
-                            await _syncGroupUsers(groupService, group.id);
-                            showSnackBar(context, 'Group updated successfully',
-                                Colors.green);
-                          }
-
-                          GoRouter.of(context).go(AppRouter.kGroupList);
-                        } catch (e) {
-                          print("ERROR SAVING GROUP $e");
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Failed to save group: $e')),
-                          );
-                        }
-                      }
-                    },
-                    child: const Text('Save'),
-                  ),
-                  if (widget.group != null)
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                      ),
-                      onPressed: () => _showDeleteConfirmation(context),
-                      child: const Text('Delete'),
-                    ),
-                ],
-              ),
+              const SizedBox(height: 20),
+              _buildActionButtons(context),
             ],
           ),
         ),
@@ -178,22 +108,143 @@ class _GroupFormState extends State<GroupForm> {
     );
   }
 
+  TextFormField _buildTextFormField({
+    required String label,
+    required String initialValue,
+    required FormFieldSetter<String> onSaved,
+  }) {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Color(0xFF017278)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFF017278)),
+        ),
+      ),
+      initialValue: initialValue,
+      onSaved: onSaved,
+    );
+  }
+
+  Widget _buildUserList() {
+    return ListView.builder(
+      itemCount: _availableUsers.length,
+      itemBuilder: (context, index) {
+        final user = _availableUsers[index];
+        final isChecked = _selectedUserIds.contains(user.id);
+        return CheckboxListTile(
+          title: Text(
+            '${user.firstname} ${user.lastname}',
+            style: const TextStyle(fontSize: 16),
+          ),
+          value: isChecked,
+          activeColor: const Color(0xFF017278),
+          onChanged: (bool? selected) {
+            setState(() {
+              if (selected == true) {
+                _selectedUserIds.add(user.id);
+                _usersToRemove.remove(user.id);
+              } else {
+                _selectedUserIds.remove(user.id);
+                _usersToRemove.add(user.id);
+              }
+            });
+          },
+        );
+      },
+    );
+  }
+
+  Row _buildActionButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF017278),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+          ),
+          onPressed: _saveGroup,
+          child: const Text(
+            'Save',
+            style: TextStyle(fontSize: 16, color: Colors.white),
+          ),
+        ),
+        if (widget.group != null)
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+            ),
+            onPressed: () => _showDeleteConfirmation(context),
+            child: const Text(
+              'Delete',
+              style: TextStyle(fontSize: 16, color: Colors.white),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Future<void> _saveGroup() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      GroupModel group = GroupModel(
+        id: widget.group?.id ?? 0,
+        name: _name,
+        description: _description,
+        users: _availableUsers
+            .where((user) => _selectedUserIds.contains(user.id))
+            .toList(),
+      );
+
+      try {
+        final GroupRepository groupService =
+            GroupRepository(apiService: widget.api);
+
+        if (widget.group == null) {
+          await groupService.createGroup(group);
+          await groupService.assignUsersToGroup(
+              group.id, _selectedUserIds.toList());
+          showSnackBar(context, 'Group inserted successfully', Colors.green);
+        } else {
+          await groupService.updateGroup(group);
+          await _syncGroupUsers(groupService, group.id);
+          showSnackBar(context, 'Group updated successfully', Colors.green);
+        }
+
+        GoRouter.of(context).go(AppRouter.kGroupList);
+      } catch (e) {
+        print("ERROR SAVING GROUP $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save group: $e')),
+        );
+      }
+    }
+  }
+
   Future<void> _syncGroupUsers(
       GroupRepository groupService, int groupId) async {
     final currentGroupUsers = widget.group?.users ?? [];
-    print("Current group users $currentGroupUsers");
     final currentUserIds = currentGroupUsers.map((user) => user.id).toSet();
 
     final usersToAdd = _selectedUserIds.difference(currentUserIds);
-    final usersToRemove = _usersToRemove.toSet(); // Use the usersToRemove list
+    final usersToRemove = _usersToRemove.toSet();
 
-    print("CURRENT USERS ID $currentUserIds");
     if (usersToAdd.isNotEmpty) {
       await groupService.assignUsersToGroup(groupId, usersToAdd.toList());
     }
 
     if (usersToRemove.isNotEmpty) {
-      print("USERS TO REMOVE $usersToRemove");
       await groupService.revokeUsersFromGroup(groupId, usersToRemove.toList());
     }
   }
