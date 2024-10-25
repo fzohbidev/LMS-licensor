@@ -8,9 +8,11 @@ import 'package:lms/features/auth/presentation/manager/user_state.dart';
 import 'package:provider/provider.dart';
 
 class CustomExpandedDrawer extends StatefulWidget {
-  final VoidCallback closeDrawer;
+  //final VoidCallback closeDrawer;
 
-  const CustomExpandedDrawer({super.key, required this.closeDrawer});
+  const CustomExpandedDrawer({
+    super.key,
+  });
 
   @override
   State<CustomExpandedDrawer> createState() => _CustomExpandedDrawerState();

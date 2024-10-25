@@ -333,6 +333,11 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: true,
           theme: ThemeData.light().copyWith(
             iconTheme: const IconThemeData(color: Colors.black),
+            iconButtonTheme: const IconButtonThemeData(
+              style: ButtonStyle(
+                iconColor: WidgetStatePropertyAll(Colors.black),
+              ),
+            ),
             hintColor: Colors.black,
             colorScheme: const ColorScheme.light(),
             radioTheme: const RadioThemeData(
