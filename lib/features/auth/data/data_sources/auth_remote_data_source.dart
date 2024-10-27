@@ -30,11 +30,8 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
     String password = '',
   }) async {
     var result = await api.post(
-      endPoint: "api/auth/signin",
-      body: {
-        "username": username,
-        "password": password,
-      },
+      endPoint: "licensor/api/auth/signin",
+      body: {"username": username, "password": password, "isLicensor": true},
     );
     userRole = result['roles'];
 
@@ -70,7 +67,7 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
         enabled: true,
         authorityIDs: [1]);
     await api.post(
-      endPoint: "api/auth/signup",
+      endPoint: "licensor/api/auth/signup",
       body: [user.toMap()],
     );
   }
