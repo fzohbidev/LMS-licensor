@@ -7,11 +7,13 @@ class LoginUseCase {
 
   LoginUseCase(this.authRepository);
 
-  Future<Either<Failure, Unit>> call(
-      {required String un,
-      required String pw,
-      required bool isLicensor}) async {
+  Future<Either<Failure, Unit>> call({
+    required String un,
+    required String pw,
+  }) async {
     return await authRepository.loginUser(
-        username: un, password: pw, isLicensor: isLicensor);
+      username: un,
+      password: pw,
+    );
   }
 }

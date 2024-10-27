@@ -3,6 +3,7 @@ import 'package:lms/core/functions/get_responsive_font_size.dart';
 
 Widget buildListTile(
     {required IconData icon,
+    Color? color,
     String? title,
     required VoidCallback onTap,
     Widget? trailing,
@@ -10,12 +11,18 @@ Widget buildListTile(
   return ListTile(
     title: Row(
       children: [
-        Icon(icon),
+        Icon(
+          icon,
+          color: color ?? Colors.black,
+        ),
         const SizedBox(width: 5),
-        Text(
-          title ?? '',
-          style: TextStyle(
-              fontSize: getResponsiveFontSize(context, baseFontSize: 14)),
+        Flexible(
+          child: Text(
+            title ?? '',
+            style: TextStyle(
+                fontSize: getResponsiveFontSize(context, baseFontSize: 14),
+                color: color ?? Colors.black),
+          ),
         ),
       ],
     ),
@@ -27,17 +34,24 @@ Widget buildListTile(
 Widget buildExpansionTile(
     {required IconData icon,
     String? title,
+    Color? color,
     required List<Widget> children,
     required BuildContext context}) {
   return ExpansionTile(
     title: Row(
       children: [
-        Icon(icon),
+        Icon(
+          icon,
+          color: color ?? Colors.black,
+        ),
         const SizedBox(width: 5),
-        Text(
-          title ?? '',
-          style: TextStyle(
-              fontSize: getResponsiveFontSize(context, baseFontSize: 14)),
+        Flexible(
+          child: Text(
+            title ?? '',
+            style: TextStyle(
+                fontSize: getResponsiveFontSize(context, baseFontSize: 14),
+                color: color ?? Colors.black),
+          ),
         ),
       ],
     ),

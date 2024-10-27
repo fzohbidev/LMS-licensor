@@ -143,7 +143,6 @@ import 'package:lms/core/functions/set_up_service_locator.dart';
 import 'package:lms/core/simple_bloc_observer.dart';
 import 'package:lms/core/utils/api.dart';
 import 'package:lms/core/utils/app_router.dart';
-import 'package:lms/features/auth/presentation/manager/user_state.dart';
 import 'package:lms/features/auth_code/data/repositories/authorization_code_repository_impl.dart';
 import 'package:lms/features/auth_code/domain/repositories/authorization_code_repository.dart';
 import 'package:lms/features/auth_code/presentation/view_model/authorization_code_view_model.dart';
@@ -302,9 +301,6 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(create: (context) => CartProvider()),
 
-          ChangeNotifierProvider(
-            create: (context) => UserState(),
-          ),
           // Provide the repository
           Provider<AuthorizationCodeRepository>(
             create: (_) =>

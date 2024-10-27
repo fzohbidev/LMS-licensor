@@ -11,23 +11,23 @@ class RegistrationCubit extends Cubit<RegistrationState> {
     this.registerUseCase,
   ) : super(RegistrationInitial());
 
-  Future<void> register(
-      {required String username,
-      required String password,
-      required String firstName,
-      required String lastName,
-      required String phone,
-      required String email,
-      required bool isLicensor}) async {
+  Future<void> register({
+    required String username,
+    required String password,
+    required String firstName,
+    required String lastName,
+    required String phone,
+    required String email,
+  }) async {
     emit(RegistrationLoading());
     var result = await registerUseCase.call(
-        fn: firstName,
-        ln: lastName,
-        email: email,
-        pw: password,
-        un: username,
-        phone: phone,
-        isLicensor: isLicensor);
+      fn: firstName,
+      ln: lastName,
+      email: email,
+      pw: password,
+      un: username,
+      phone: phone,
+    );
     result.fold(
       (failure) {
         print(failure.message);

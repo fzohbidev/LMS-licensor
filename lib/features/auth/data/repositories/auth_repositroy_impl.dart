@@ -13,13 +13,13 @@ class AuthRepositoryImpl extends AuthRepository {
   });
 
   @override
-  Future<Either<Failure, Unit>> loginUser(
-      {String username = '',
-      String password = '',
-      required bool isLicensor}) async {
+  Future<Either<Failure, Unit>> loginUser({
+    String username = '',
+    String password = '',
+  }) async {
     try {
       await authRemoteDataSource.loginUser(
-          password: password, username: username, isLicensor: isLicensor);
+          password: password, username: username);
       return right(unit); // Return Unit from dartz
     } catch (e) {
       print("Error in loginUser: $e"); // Logging the error
@@ -31,23 +31,23 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> registerUser(
-      {String username = '',
-      String password = '',
-      String firstName = '',
-      String lastName = '',
-      String phone = '',
-      String email = '',
-      required bool isLicensor}) async {
+  Future<Either<Failure, Unit>> registerUser({
+    String username = '',
+    String password = '',
+    String firstName = '',
+    String lastName = '',
+    String phone = '',
+    String email = '',
+  }) async {
     try {
       await authRemoteDataSource.registerUser(
-          firstName: firstName,
-          lastName: lastName,
-          phone: phone,
-          email: email,
-          password: password,
-          username: username,
-          isLicensor: isLicensor);
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        email: email,
+        password: password,
+        username: username,
+      );
       return right(unit); // Return Unit from dartz
     } catch (e) {
       print("Error in registerUser: $e"); // Logging the error

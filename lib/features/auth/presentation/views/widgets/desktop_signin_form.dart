@@ -77,7 +77,6 @@ class _SignInFormState extends State<SignInForm> {
                             context.read<SignInCubit>().signIn(
                                   username: widget.usernameController.text,
                                   password: widget.passwordController.text,
-                                  isLicensor: false,
                                 );
                           }
                         },

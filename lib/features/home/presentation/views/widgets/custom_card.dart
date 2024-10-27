@@ -22,30 +22,28 @@ class _CustomCardState extends State<CustomCard> {
       ),
       child: Row(
         children: [
-          SizedBox(
-            width: 200, // Decreased width for the ExpansionTile
+          const SizedBox(
+            width: 5,
+          ),
+          Expanded(
+            flex: 1,
             child: DropdownButton(
               style: TextStyle(
                   fontSize: getResponsiveFontSize(context, baseFontSize: 16),
                   color: Colors.black),
               underline: const Text(''),
               focusColor: Colors.transparent,
+              isExpanded: true,
               hint: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SizedBox(
-                    width: 10,
+                  FlexibleIcon(
+                    icon: FontAwesomeIcons.binoculars,
                   ),
-                  Icon(
-                    FontAwesomeIcons.binoculars,
-                    color: kIconColor,
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text('Simplified view'),
+                  FittedBox(
+                      fit: BoxFit.scaleDown, child: Text('Simplified view')),
                 ],
               ),
-              isExpanded: true,
               items: const [
                 DropdownMenuItem(
                   value: 'item1',
@@ -63,85 +61,124 @@ class _CustomCardState extends State<CustomCard> {
               onChanged: (value) {},
             ),
           ),
-          const VerticalDivider(
-            width: 10,
-            thickness: 1,
-            color: Colors.black,
-          ),
-          const SizedBox(width: 15),
-          Row(
-            children: [
-              InkWell(
-                onTap: () {
-                  GoRouter.of(context).go(AppRouter.kAddUsers);
-                },
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.person_add_alt,
-                      color: kIconColor,
-                    ),
-                    Text(
-                      '  Add a user',
-                      style: TextStyle(
-                          fontSize:
-                              getResponsiveFontSize(context, baseFontSize: 16)),
-                    ),
-                  ],
+          Expanded(
+            flex: 3,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: () {
+                    GoRouter.of(context).go(AppRouter.kAddUsers);
+                  },
+                  child: Row(
+                    children: [
+                      const FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Icon(
+                          Icons.person_add_alt,
+                          color: kIconColor,
+                        ),
+                      ),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          '  Add a user',
+                          style: TextStyle(
+                              fontSize: getResponsiveFontSize(context,
+                                  baseFontSize: 16)),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 15),
-              InkWell(
-                onTap: () {
-                  GoRouter.of(context).go(AppRouter.kAddGroup);
-                },
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.person_add_alt,
-                      color: kIconColor,
-                    ),
-                    Text(
-                      '  Add a group',
-                      style: TextStyle(
-                          fontSize:
-                              getResponsiveFontSize(context, baseFontSize: 16)),
-                    ),
-                  ],
+                const SizedBox(width: 15),
+                InkWell(
+                  onTap: () {
+                    GoRouter.of(context).go(AppRouter.kAddGroup);
+                  },
+                  child: Row(
+                    children: [
+                      const FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Icon(
+                          Icons.person_add_alt,
+                          color: kIconColor,
+                        ),
+                      ),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          '  Add a group',
+                          style: TextStyle(
+                              fontSize: getResponsiveFontSize(context,
+                                  baseFontSize: 16)),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 15),
-              InkWell(
-                onTap: () {
-                  // Add action for viewing the bill
-                },
-                child: Row(
-                  children: [
-                    const Icon(
-                      FontAwesomeIcons.creditCard,
-                      color: kIconColor,
-                    ),
-                    Text(
-                      '  View your bill',
-                      style: TextStyle(
-                          fontSize:
-                              getResponsiveFontSize(context, baseFontSize: 16)),
-                    ),
-                  ],
+                const SizedBox(width: 15),
+                InkWell(
+                  onTap: () {
+                    // Add action for viewing the bill
+                  },
+                  child: Row(
+                    children: [
+                      const FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Icon(
+                          FontAwesomeIcons.creditCard,
+                          color: kIconColor,
+                        ),
+                      ),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          '  View your bill',
+                          style: TextStyle(
+                              fontSize: getResponsiveFontSize(context,
+                                  baseFontSize: 16)),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+              ],
+            ),
+          ),
+          //const SizedBox(width: 15),
+          //const Icon(FontAwesomeIcons.ellipsis),
+          //const Spacer(),
+          Expanded(
+            flex: 1,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                'Intelligle',
+                style: TextStyle(
+                    fontSize: getResponsiveFontSize(context, baseFontSize: 16)),
               ),
-            ],
+            ),
           ),
-          const SizedBox(width: 15),
-          const Icon(FontAwesomeIcons.ellipsis),
-          const Spacer(),
-          Text(
-            'Intelligle',
-            style: TextStyle(
-                fontSize: getResponsiveFontSize(context, baseFontSize: 16)),
-          ),
-          const SizedBox(width: 15),
         ],
+      ),
+    );
+  }
+}
+
+class FlexibleIcon extends StatelessWidget {
+  const FlexibleIcon({super.key, required this.icon, this.iconColor});
+  final IconData icon;
+  final Color? iconColor;
+  @override
+  Widget build(BuildContext context) {
+    return Flexible(
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Icon(
+          icon,
+          color: kIconColor,
+        ),
       ),
     );
   }

@@ -22,7 +22,6 @@ class _RegisterFormState extends State<DesktopRegisterForm> {
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
-  bool? isLicensor = false;
 
   @override
   Widget build(BuildContext context) {
@@ -67,26 +66,6 @@ class _RegisterFormState extends State<DesktopRegisterForm> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          // RadioListTile<bool>(
-                          //   title: const Text('Licensee'),
-                          //   value: false,
-                          //   groupValue: isLicensor,
-                          //   onChanged: (bool? value) {
-                          //     setState(() {
-                          //       isLicensor = value;
-                          //     });
-                          //   },
-                          // ),
-                          // RadioListTile<bool>(
-                          //   title: const Text('Licensor'),
-                          //   value: true,
-                          //   groupValue: isLicensor,
-                          //   onChanged: (bool? value) {
-                          //     setState(() {
-                          //       isLicensor = value;
-                          //     });
-                          //   },
-                          // ),
                           buildAuthTextField(
                               controller: _usernameController,
                               label: 'Username'),
@@ -134,7 +113,6 @@ class _RegisterFormState extends State<DesktopRegisterForm> {
                                                     _lastNameController.text,
                                                 phone: _phoneController.text,
                                                 email: _emailController.text,
-                                                isLicensor: isLicensor!,
                                               );
                                         }
                                       },

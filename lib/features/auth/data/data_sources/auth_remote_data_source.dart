@@ -2,24 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:lms/core/utils/api.dart';
 import 'package:lms/features/auth/data/models/user_model.dart';
 import 'package:lms/features/auth/presentation/manager/sign_in_cubit/sign_in_cubit.dart';
-import 'package:lms/features/auth/presentation/manager/user_state.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String jwtToken = '';
 
 abstract class AuthRemoteDataSource {
-  Future<void> loginUser(
-      {String username, String password, required bool isLicensor});
-  Future<void> registerUser(
-      {int id,
-      String firstName,
-      String lastName,
-      String username,
-      String password,
-      String phone,
-      String email,
-      required bool isLicensor});
+  Future<void> loginUser({String username, String password});
+  Future<void> registerUser({
+    int id,
+    String firstName,
+    String lastName,
+    String username,
+    String password,
+    String phone,
+    String email,
+  });
 }
 
 class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
@@ -28,34 +25,19 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
   AuthRemoteDataSourceImpl(this.context, {required this.api});
 
   @override
-  Future<void> loginUser(
-      {String username = '',
-      String password = '',
-      required bool isLicensor}) async {
-    var result = isLicensor
-        ? await api.post(
-            endPoint: "licensor/api/auth/signin",
-            body: {
-              "username": username,
-              "password": password,
-              "isLicensor": true,
-            },
-          )
-        : await api.post(
-            endPoint: "api/auth/signin",
-            body: {
-              "username": username,
-              "password": password,
-            },
-          );
+  Future<void> loginUser({
+    String username = '',
+    String password = '',
+  }) async {
+    var result = await api.post(
+      endPoint: "api/auth/signin",
+      body: {
+        "username": username,
+        "password": password,
+      },
+    );
     userRole = result['roles'];
-    // isLicensor = result['isLicensor'];
 
-    Provider.of<UserState>(context, listen: false)
-        .setUserInfo(result['isLicensor']
-            // List<String>.from(result['roles']),
-            );
-    print(isLicensor);
     print(userRole);
     // Save the JWT token using SharedPreferences
     jwtToken = result['jwtToken'];
@@ -68,15 +50,15 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
   }
 
   @override
-  Future<void> registerUser(
-      {int id = 0,
-      String firstName = '',
-      String lastName = '',
-      String username = '',
-      String password = '',
-      String phone = '',
-      String email = '',
-      required bool isLicensor}) async {
+  Future<void> registerUser({
+    int id = 0,
+    String firstName = '',
+    String lastName = '',
+    String username = '',
+    String password = '',
+    String phone = '',
+    String email = '',
+  }) async {
     User user = User(
         id: id,
         firstName: firstName,
@@ -87,14 +69,9 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
         email: email,
         enabled: true,
         authorityIDs: [1]);
-    var result = !isLicensor
-        ? await api.post(
-            endPoint: "api/auth/signup",
-            body: [user.toMap()],
-          )
-        : await api.post(
-            endPoint: "licensor/api/auth/signup",
-            body: [user.toMap()],
-          );
+    await api.post(
+      endPoint: "api/auth/signup",
+      body: [user.toMap()],
+    );
   }
 }
